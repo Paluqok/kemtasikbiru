@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Booking</title>
+    <!-- Boxiocns CDN Link -->
+  <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+
+  <!-- Base CSS -->
+  <link rel="stylesheet" th:href="@{stylesheets/css/base.css}">
+
+  <!-- Specific CSS -->
+  <link rel="stylesheet" th:href="@{stylesheets/css/staffnavbar.css}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+  <header>
+    <!-- Navbar -->
+<div class="sidebar close">
+  <div class="logo-details">
+    <i class='bx bxl-c-plus-plus'></i>
+    <span class="logo_name">KemTasikBiru</span>
+  </div>
+  <ul class="nav-links">
+    <li>
+      <a th:href="@{/homeCustomer}">
+        <i class='bx bx-grid-alt' ></i>
+        <span class="link_name">Home</span>
+      </a>
+      <ul class="sub-menu blank">
+        <li><a class="link_name" th:href="@{/homeCustomer}">Home</a></li>
+      </ul>
+    </li>
+    <li>
+      <a th:href="@{/listPackagesForCustomer}">
+        <i class='bx bx-pie-chart-alt-2' ></i>
+        <span class="link_name">Package</span>
+      </a>
+      <ul class="sub-menu blank">
+        <li><a class="link_name" th:href="@{/listPackagesForCustomer}">Package</a></li>
+      </ul>
+    </li>
+    <li>
+      <a th:href="@{/listActivityForCustomer}">
+        <i class='bx bx-line-chart' ></i>
+        <span class="link_name">Activity</span>
+      </a>
+      <ul class="sub-menu blank">
+        <li><a class="link_name" th:href="@{/listActivityForCustomer}">Activity</a></li>
+      </ul>
+    </li>
+    <li>
+      <a th:href="@{/custViewBooking}">
+        <i class='bx bx-compass' ></i>
+        <span class="link_name">Booking List</span>
+      </a>
+      <ul class="sub-menu blank">
+        <li><a class="link_name" th:href="@{/custViewBooking}">Booking List</a></li>
+      </ul>
+    </li>
+    <li>
+      <a th:href="@{/custProfile}">
+        <i class='bx bx-history'></i>
+        <span class="link_name">Profile</span>
+      </a>
+      <ul class="sub-menu blank">
+        <li><a class="link_name" th:href="@{/custProfile}">Profile</a></li>
+      </ul>
+    </li>
+    <li>
+  <div class="profile-details">
+    <div class="profile-content">
+      <!--<img src="image/profile.jpg" alt="profileImg">-->
+    </div>
+    <div class="name-job">
+      <div class="profile_name">Log Out</div>
+    </div>
+    <a th:href="@{/custLogin}"><i class='bx bx-log-out' ></i></a>
+  </div>
+</li>
+</ul>
+</div>
+<section class="home-section">
+  <div class="home-content">
+    <i class='bx bx-menu' ></i>
+  </div>
+</section>
+<!-- Navbar -->
+<script>
+  let arrow = document.querySelectorAll(".arrow");
+  for (var i = 0; i < arrow.length; i++) {
+    arrow[i].addEventListener("click", (e)=>{
+   let arrowParent = e.target.parentElement.parentElement;//selecting main parent of arrow
+   arrowParent.classList.toggle("showMenu");
+    });
+  }
+  let sidebar = document.querySelector(".sidebar");
+  let sidebarBtn = document.querySelector(".bx-menu");
+  console.log(sidebarBtn);
+  sidebarBtn.addEventListener("click", ()=>{
+    sidebar.classList.toggle("close");
+  });
+  </script>
+</header>
+    </header>
+<div class="container">
+    <h1>Create Booking</h1>
+    <form id="bookingForm" th:action="@{/createBooking}" method="post">
+        <div class="form-group">
+            <label for="bookingStartDate">Booking Start Date:</label>
+            <input type="datetime-local" id="bookingStartDate" name="bookingStartDate" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="bookingEndDate">Booking End Date:</label>
+            <input type="datetime-local" id="bookingEndDate" name="bookingEndDate" class="form-control" required>
+        </div>
+        <button type="button" id="checkButton" class="btn btn-primary">Check Availability</button>
+        <div id="availabilityMessage"></div>
+        <div id="packageSelection" style="display:none;">
+            <h3>Select Package</h3>
+            <div class="form-group">
+                <th:block th:each="pkg : ${packages}">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="packageId" th:id="${pkg.packageId}" th:value="${pkg.packageId}" required>
+                        <label class="form-check-label" th:for="${pkg.packageId}" th:text="${pkg.packageName} + ' (RM' + ${pkg.packagePrice} + ')'"></label>
+                    </div>
+                </th:block>
+            </div>
+            <button type="submit" class="btn btn-success">Submit</button>
+        </div>
+    </form>
+</div>
+<script>
+    document.getElementById('checkButton').addEventListener('click', function() {
+        const startDate = document.getElementById('bookingStartDate').value;
+        const endDate = document.getElementById('bookingEndDate').value;
+
+        if (new Date(endDate) - new Date(startDate) > 3 * 24 * 60 * 60 * 1000) {
+            document.getElementById('availabilityMessage').innerText = 'Booking not available for more than 3 days';
+            document.getElementById('packageSelection').style.display = 'none';
+        } else {
+            // Simulated AJAX call to check for clashes
+            const clashes = 2; // Placeholder for number of clashes
+            if (clashes >= 5) {
+                document.getElementById('availabilityMessage').innerText = 'Booking is currently full at that date';
+                document.getElementById('packageSelection').style.display = 'none';
+            } else {
+                document.getElementById('availabilityMessage').innerText = 'No clash';
+                document.getElementById('packageSelection').style.display = 'block';
+            }
+        }
+    });
+
+    document.querySelectorAll('.package-radio').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const packagePrice = this.getAttribute('data-price');
+            document.getElementById('totalPrice').value = packagePrice;
+        });
+    });
+</script>
+</body>
+</html>

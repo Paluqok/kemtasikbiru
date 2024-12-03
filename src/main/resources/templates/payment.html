@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment</title>
+    <!-- Boxiocns CDN Link -->
+  <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+
+  <!-- Base CSS -->
+  <link rel="stylesheet" th:href="@{stylesheets/css/base.css}">
+
+  <!-- Specific CSS -->
+  <link rel="stylesheet" th:href="@{stylesheets/css/staffnavbar.css}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <h1>Payment</h1>
+    <img th:src="@{/stylesheets/img/qr.jpg}" alt="QR Code" class="img-fluid">
+    <form th:action="@{/submitPayment}" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="paymentReceipt">Upload Payment Receipt:</label>
+            <input type="file" id="paymentReceipt" name="paymentReceipt" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="totalPrice">Total Price:</label>
+            <input type="text" id="totalPrice" name="totalPrice" class="form-control" th:value="${totalPrice}" readonly>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+</body>
+</html>

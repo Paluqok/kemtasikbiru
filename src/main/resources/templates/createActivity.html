@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Profile</title>
+    <!-- Boxiocns CDN Link -->
+  <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+
+  <!-- Base CSS -->
+  <link rel="stylesheet" th:href="@{stylesheets/css/base.css}">
+
+  <!-- Specific CSS -->
+  <link rel="stylesheet" th:href="@{stylesheets/css/staffnavbar.css}">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<style>
+  .container {
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  .hidden {
+    display: none;
+  }
+</style>
+</head>
+<body>
+  <header><!-- Navbar -->
+    <div class="sidebar close">
+        <div class="logo-details">
+          <i class='bx bxl-c-plus-plus'></i>
+          <span class="logo_name">KemTasikBiru</span>
+        </div>
+        <ul class="nav-links">
+          <li>
+            <a th:href="@{/homeStaff}">
+              <i class='bx bx-grid-alt' ></i>
+              <span class="link_name">Home</span>
+            </a>
+            <ul class="sub-menu blank">
+              <li><a class="link_name" th:href="@{/homeStaff}">Home</a></li>
+            </ul>
+          </li>
+          <li>
+            <a th:href="@{/listPackages}">
+              <i class='bx bx-pie-chart-alt-2' ></i>
+              <span class="link_name">Package</span>
+            </a>
+            <ul class="sub-menu blank">
+              <li><a class="link_name" th:href="@{/listPackages}">Package</a></li>
+            </ul>
+          </li>
+          <li>
+            <a th:href="@{/listActivity}">
+              <i class='bx bx-line-chart' ></i>
+              <span class="link_name">Activity</span>
+            </a>
+            <ul class="sub-menu blank">
+              <li><a class="link_name" th:href="@{/listActivity}">Activity</a></li>
+            </ul>
+          </li>
+          <li>
+            <a th:href="@{/staffViewBooking}">
+              <i class='bx bx-compass' ></i>
+              <span class="link_name">Booking List</span>
+            </a>
+            <ul class="sub-menu blank">
+              <li><a class="link_name" th:href="@{/staffViewBooking}">Booking List</a></li>
+            </ul>
+          </li>
+          <li>
+            <a th:href="@{/staffProfile}">
+              <i class='bx bx-history'></i>
+              <span class="link_name">Profile</span>
+            </a>
+            <ul class="sub-menu blank">
+              <li><a class="link_name" th:href="@{/staffProfile}">Profile</a></li>
+            </ul>
+          </li>
+          <li>
+        <div class="profile-details">
+          <div class="profile-content">
+            <!--<img src="image/profile.jpg" alt="profileImg">-->
+          </div>
+          <div class="name-job">
+            <div class="profile_name">Log Out</div>
+          </div>
+          <a th:href="@{/staffLogin}"><i class='bx bx-log-out' ></i></a>
+        </div>
+      </li>
+    </ul>
+      </div>
+      <section class="home-section">
+        <div class="home-content">
+          <i class='bx bx-menu' ></i>
+        </div>
+      </section>
+      <!-- Navbar -->
+      <script>
+        let arrow = document.querySelectorAll(".arrow");
+        for (var i = 0; i < arrow.length; i++) {
+          arrow[i].addEventListener("click", (e)=>{
+         let arrowParent = e.target.parentElement.parentElement;//selecting main parent of arrow
+         arrowParent.classList.toggle("showMenu");
+          });
+        }
+        let sidebar = document.querySelector(".sidebar");
+        let sidebarBtn = document.querySelector(".bx-menu");
+        console.log(sidebarBtn);
+        sidebarBtn.addEventListener("click", ()=>{
+          sidebar.classList.toggle("close");
+        });
+        </script>
+
+  </header>
+<div class="container">
+  <h1>Create Activity</h1>
+  <form th:action="@{/createActivities}" modelAttribute="createActivities" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+      <input type="hidden" id="action" name="action" value="createActivity">
+      <label for="name">Activity Name:</label>
+      <input type="text" class="form-control" id="name" name="name" required>
+    </div>
+    <div class="form-group">
+      <label for="price">Price:</label>
+      <input type="number" class="form-control" id="price" name="price" required>
+    </div>
+    <div class="form-group">
+      <label for="duration">Duration:</label>
+      <input type="text" class="form-control" id="duration" name="duration" required>
+    </div>
+    <div class="form-group">
+        <label for="activityImage">Activity Image:</label>
+        <input type="file" class="form-control" id="activityImage" name="activityImage" required>
+    </div>
+    <div class="form-group">
+      <label for="activityType">Activity Type:</label><br>
+      <label for="wet">Wet</label>
+      <input type="radio" id="wet" name="activityType" value="wet" onclick="toggleInput('wet')">
+      <label for="dry">Dry</label>
+      <input type="radio" id="dry" name="activityType" value="dry" onclick="toggleInput('dry')"><br><br>
+    </div>
+    <div id="equipmentDiv" class="form-group hidden">
+      <label for="equipment">Equipment:</label>
+      <input type="text" class="form-control" id="equipment" name="equipment">
+    </div>
+    <div id="locationDiv" class="form-group hidden">
+      <label for="location">Location:</label>
+      <input type="text" class="form-control" id="location" name="location">
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+  </form>
+</div>
+
+<script>
+function toggleInput(option) {
+  document.getElementById('equipmentDiv').classList.add('hidden');
+  document.getElementById('locationDiv').classList.add('hidden');
+  document.getElementById('equipment').value = '';
+  document.getElementById('location').value = '';
+
+  if (option === 'wet') {
+    document.getElementById('equipmentDiv').classList.remove('hidden');
+  } else if (option === 'dry') {
+    document.getElementById('locationDiv').classList.remove('hidden');
+  }
+}
+</script>
+</body>
+</html>

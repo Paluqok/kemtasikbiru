@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Profile</title>
+    <!-- Boxiocns CDN Link -->
+  <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+
+  <!-- Base CSS -->
+  <link rel="stylesheet" th:href="@{stylesheets/css/base.css}">
+
+  <!-- Specific CSS -->
+  <link rel="stylesheet" th:href="@{stylesheets/css/staffnavbar.css}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        .container {
+            max-width: 500px;
+            margin: 40px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+        }
+        body {
+            background-color: #f0f0f0;
+        }
+    </style>
+    <script>
+        function validateEmailAndPhoneAndPassword() {
+            const emailField = document.getElementById('custEmail');
+            const emailValue = emailField.value;
+            const gmailPattern = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+
+            if (!gmailPattern.test(emailValue)) {
+                alert('Please enter a valid Gmail address (ending with @gmail.com).');
+                return false;
+            }
+
+            const phoneField = document.getElementById('custPhoneNo');
+            const phoneValue = phoneField.value;
+            const phonePattern = /^01\d-?\d{7,8}$/;
+
+            if (!phonePattern.test(phoneValue)) {
+                alert('Please enter a valid phone number (01x-xxxxxxxx or 01xxxxxxxxx).');
+                return false;
+            }
+
+            const passField = document.getElementById('custPassword');
+            const passValue = passField.value;
+            const checkField = document.getElementById('checkPassword');
+            const checkValue = checkField.value;
+
+            if (passValue !== checkValue) {
+                alert('The passwords you entered do not match. Please try again.');
+                return false;
+            }
+            return true;
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <!-- Navbar -->
+    <div class="sidebar close">
+        <div class="logo-details">
+          <i class='bx bxl-c-plus-plus'></i>
+          <span class="logo_name">KemTasikBiru</span>
+        </div>
+        <ul class="nav-links">
+          <li>
+            <a th:href="@{/homeCustomer}">
+              <i class='bx bx-grid-alt' ></i>
+              <span class="link_name">Home</span>
+            </a>
+            <ul class="sub-menu blank">
+              <li><a class="link_name" th:href="@{/homeCustomer}">Home</a></li>
+            </ul>
+          </li>
+          <li>
+            <a th:href="@{/listPackagesForCustomer}">
+              <i class='bx bx-pie-chart-alt-2' ></i>
+              <span class="link_name">Package</span>
+            </a>
+            <ul class="sub-menu blank">
+              <li><a class="link_name" th:href="@{/listPackagesForCustomer}">Package</a></li>
+            </ul>
+          </li>
+          <li>
+            <a th:href="@{/listActivityForCustomer}">
+              <i class='bx bx-line-chart' ></i>
+              <span class="link_name">Activity</span>
+            </a>
+            <ul class="sub-menu blank">
+              <li><a class="link_name" th:href="@{/listActivityForCustomer}">Activity</a></li>
+            </ul>
+          </li>
+          <li>
+            <a th:href="@{/custViewBooking}">
+              <i class='bx bx-compass' ></i>
+              <span class="link_name">Booking List</span>
+            </a>
+            <ul class="sub-menu blank">
+              <li><a class="link_name" th:href="@{/custViewBooking}">Booking List</a></li>
+            </ul>
+          </li>
+          <li>
+            <a th:href="@{/custProfile}">
+              <i class='bx bx-history'></i>
+              <span class="link_name">Profile</span>
+            </a>
+            <ul class="sub-menu blank">
+              <li><a class="link_name" th:href="@{/custProfile}">Profile</a></li>
+            </ul>
+          </li>
+          <li>
+        <div class="profile-details">
+          <div class="profile-content">
+            <!--<img src="image/profile.jpg" alt="profileImg">-->
+          </div>
+          <div class="name-job">
+            <div class="profile_name">Log Out</div>
+          </div>
+          <a th:href="@{/custLogin}"><i class='bx bx-log-out' ></i></a>
+        </div>
+      </li>
+    </ul>
+      </div>
+      <section class="home-section">
+        <div class="home-content">
+          <i class='bx bx-menu' ></i>
+        </div>
+      </section>
+      <!-- Navbar -->
+      <script>
+        let arrow = document.querySelectorAll(".arrow");
+        for (var i = 0; i < arrow.length; i++) {
+          arrow[i].addEventListener("click", (e)=>{
+         let arrowParent = e.target.parentElement.parentElement;//selecting main parent of arrow
+         arrowParent.classList.toggle("showMenu");
+          });
+        }
+        let sidebar = document.querySelector(".sidebar");
+        let sidebarBtn = document.querySelector(".bx-menu");
+        console.log(sidebarBtn);
+        sidebarBtn.addEventListener("click", ()=>{
+          sidebar.classList.toggle("close");
+        });
+        </script>
+    </header>
+    <div class="container">
+        <h1>Update Profile</h1>
+        <form th:action="@{/updateCustomer}" method="post" onsubmit="return validateEmailAndPhoneAndPassword()">
+            <input type="hidden" name="custId" th:value="${customer.custId}">
+
+            <div class="form-group">
+                <label for="custName" class="details">Name:</label>
+                <input type="text" class="form-control" id="custName" name="custName" th:value="${customer.custName}" required>
+            </div>
+            <div class="form-group">
+                <label for="custEmail" class="details">Email:</label>
+                <input type="email" class="form-control" id="custEmail" name="custEmail" th:value="${customer.custEmail}" required>
+            </div>
+            <div class="form-group">
+                <label for="custAddress" class="details">Address:</label>
+                <input type="text" class="form-control" id="custAddress" name="custAddress" th:value="${customer.custAddress}" required>
+            </div>
+            <div class="form-group">
+                <label for="custPhoneNo" class="details">Phone No:</label>
+                <input type="text" class="form-control" id="custPhoneNo" name="custPhoneNo" th:value="${customer.custPhoneNo}" required>
+            </div>
+            <div class="form-group">
+                <label for="custPassword" class="details">Password:</label>
+                <input type="password" class="form-control" id="custPassword" name="custPassword" placeholder="Leave blank to keep current password">
+            </div>
+            <div th:if="${param.error}" class="alert alert-danger">
+                <p>Passwords do not match. Please try again.</p>
+            </div>
+            <div class="form-group">
+                <label for="checkPassword" class="details">Confirm Password:</label>
+                <input type="password" class="form-control" id="checkPassword" name="checkPassword" placeholder="Leave blank to keep current password">
+            </div>
+            <button type="submit" class="btn btn-primary">Update</button>
+            <a th:href="@{/custProfile}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</body>
+</html>

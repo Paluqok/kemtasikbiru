@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity List</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+    
+    <!-- Boxiocns CDN Link -->
+    <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+    
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        .container {
+            margin-top: 40px;
+        }
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .card-body {
+            text-align: center;
+        }
+        .card-title {
+            font-size: 1.5em;
+        }
+        .btn {
+            margin: 5px;
+        }
+    </style>
+    <script>
+        function confirmDelete(activityId) {
+            if (confirm("Are you sure you want to delete this activity?")) {
+                window.location.href = '/deleteActivity/' + activityId;
+            }
+        }
+    </script>
+</head>
+<body>
+<header>
+    <!-- Navbar -->
+    <div th:insert="~{fragments/custnavbar::navbar}"></div>
+    <!--<Script for Navbar>-->
+    <script>
+        let arrow = document.querySelectorAll(".arrow");
+        for (var i = 0; i < arrow.length; i++) {
+            arrow[i].addEventListener("click", (e)=>{
+                let arrowParent = e.target.parentElement.parentElement;//selecting main parent of arrow
+                arrowParent.classList.toggle("showMenu");
+            });
+        }
+        let sidebar = document.querySelector(".sidebar");
+        let sidebarBtn = document.querySelector(".bx-menu");
+        console.log(sidebarBtn);
+        sidebarBtn.addEventListener("click", ()=>{
+            sidebar.classList.toggle("close");
+        });
+    </script>
+    <!-- Navbar -->
+</header>
+<div class="container">
+    <div class="row">
+        <div class="col-12 text-right">
+            <a th:href="@{/createActivity}" class="btn btn-primary">Create Activity</a>
+        </div>
+    </div>
+    <div class="row">
+        <div th:each="activity : ${activities}" class="col-md-3">
+            <div class="card">
+                <img th:src="@{'/images/' + ${activity.activityImage}}" alt="Activity Image" />
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${activity.activityName}">ActivityName</h5>
+                    <p class="card-text">
+                        Price: <span th:text="${activity.activityPrice}">ActivityPrice</span><br>
+                        Duration: <span th:text="${activity.activityDuration}">ActivityDuration</span><br>
+                        <span th:if="${activity instanceof T(com.heroku.java.model.Wet)}">
+                            Equipment: <span th:text="${activity.activityEquipment}">ActivityEquipment</span><br>
+                            Type: Wet
+                        </span>
+                        <span th:if="${activity instanceof T(com.heroku.java.model.Dry)}">
+                            Location: <span th:text="${activity.activityLocation}">ActivityLocation</span><br>
+                            Type: Dry
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

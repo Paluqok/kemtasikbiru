@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Login</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        .container {
+            max-width: 500px;
+            margin: 40px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+        }
+        .switch-link {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+        }
+        body{
+            background-color: aqua;
+        }
+        .switch-top-link {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="switch-top-link">
+            <a th:href="@{/staffLogin}">Staff Login</a>
+        </div>
+        <h1>Customer Login</h1>
+        <form th:action="@{/loginCustomer}" modelAttribute="loginCustomer" th:objects = "${loginCustomer}" method="post">
+            <input type="hidden" name="action" value="login">
+            <div class="form-group">
+                <label for="custEmail">Email:</label>
+                <input type="email" class="form-control" id="custEmail" name="custEmail" required>
+            </div>
+            <div class="form-group">
+                <label for="custPassword">Password:</label>
+                <input type="password" class="form-control" id="custPassword" name="custPassword" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+        <div class="switch-link">
+            <a th:href="@{/custSignUp}">Don't have an account? Sign Up</a>
+        </div>
+    </div>
+</body>
+</html>
