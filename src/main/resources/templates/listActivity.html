@@ -146,7 +146,7 @@
                             Type: Dry
                         </span>
                     </p>
-                    <a th:href="@{'/updateActivity/' + ${activity.activityId}}" class="btn btn-info">Update</a>
+                    <a href="javascript:void(0);" th:attr="onclick='updateActivity(' + ${activity.activityId} + ')'" class="btn btn-info">Update</a>
                     <!-- <button th:onclick="'deleteActivity(' + ${activity.activityId} + ')'" class="btn btn-danger">Delete</button> -->
                     <a href="javascript:void(0);" th:attr="onclick='deleteActivity(' + ${activity.activityId} + ')'" class="btn btn-danger">Delete</a>
                 </div>
@@ -156,18 +156,13 @@
 </div>
 
 <script>
-    // async function deleteActivity(activtiyId) {
-    //     if (confirm("Are you sure you want to delete this activity?")) {
-    //         await fetch(`/deleteActivity/${activityId}`, { method: 'POST' })
-    //             .then(response => {
-    //                 if (response.ok) {
-    //                     window.location.reload();
-    //                 } else {
-    //                     alert('Failed to delete booking');
-    //                 }
-    //             });
-    //     }
-    // }
+
+    function updateActivity(activityId) {
+        if (confirm("Are you sure you want to update this activity?")) {
+            window.location.href = '/updateActivity/' + activityId;
+        }
+    }
+
     function deleteActivity(activityId) {
         if (confirm("Are you sure you want to delete this activity?")) {
             window.location.href = '/deleteActivity/' + activityId;
