@@ -109,7 +109,7 @@
             </div>
           </div>
         </div>
-        <button type="submit" class="btn btn-primary">Update</button>
+        <button type="submit" class="btn btn-primary" onclick="return confirmUpdate()">Update</button>
         <a th:href="@{/listActivity}" class="btn btn-secondary">Cancel</a>
       </form>
     </div>
@@ -128,19 +128,10 @@
       }
     }
 
-    // Populate form with data from the server
-    // document.addEventListener('DOMContentLoaded', function() {
-    //   const params = new URLSearchParams(window.location.search);
-    //   document.getElementById('activityId').value = params.get('activityId');
-    //   document.getElementById('name').value = params.get('activityName');
-    //   document.getElementById('price').value = params.get('activityPrice');
-    //   document.getElementById('duration').value = params.get('activityDuration');
-    //   const activityType = params.get('activityType');
-    //   document.getElementById(activityType).checked = true;
-    //   toggleInput(activityType);
-    //   document.getElementById('equipment').value = params.get('activityEquipment') || '';
-    //   document.getElementById('location').value = params.get('activityLocation') || '';
-    // });
+    function confirmUpdate() {
+      return confirm("Are you sure you want to update this activity?");
+    }
+
     </script>
 </body>
 </html>
