@@ -8,6 +8,14 @@ public class Payment {
     private LocalDateTime paymentDate;
     private byte[] paymentReceipt;
 
+    // Default constructor
+    public Payment() {}
+
+    @Override
+    public String toString() {
+        return "Payment #" + getPaymentId().toString();
+    }
+
     // Getters and Setters
     public Long getPaymentId() {
         return paymentId;

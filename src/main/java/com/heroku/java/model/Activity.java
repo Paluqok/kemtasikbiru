@@ -1,11 +1,15 @@
 package com.heroku.java.model;
 
+import org.springframework.lang.Nullable;
+import org.springframework.web.multipart.MultipartFile;
+
 public class Activity {
     private Long activityId;
     private String activityName;
     private String activityDuration;
     private double activityPrice;
-    private String activityImage;
+    private String activityImagePath;
+    private MultipartFile activityImage;
 
     // Default constructor
     public Activity() {
@@ -17,7 +21,7 @@ public class Activity {
         this.activityName = activityName;
         this.activityDuration = activityDuration;
         this.activityPrice = activityPrice;
-        this.activityImage = activityImage;
+        this.activityImagePath = activityImage;
     }
 
     // Getters and setters
@@ -53,11 +57,24 @@ public class Activity {
         this.activityPrice = activityPrice;
     }
 
-    public String getActivityImage() {
+    public String getActivityImagePath() {
+        return activityImagePath;
+    }
+
+    public void setActivityImagePath(String activityImage) {
+        this.activityImagePath = activityImage;
+    }
+
+    public MultipartFile getActivityImage() {
         return activityImage;
     }
 
-    public void setActivityImage(String activityImage) {
+    public void setActivityImage(MultipartFile activityImage) {
         this.activityImage = activityImage;
+    }
+
+    @Override
+    public String toString() {
+        return "Activity";
     }
 }

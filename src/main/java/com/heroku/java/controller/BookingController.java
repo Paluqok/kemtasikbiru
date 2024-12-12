@@ -30,7 +30,7 @@ public class BookingController {
     @Autowired
     private JdbcTemplate jdbcTemplate;
     private final DataSource dataSource;
-     @Autowired
+    @Autowired
     public BookingController(DataSource dataSource) {
         this.dataSource = dataSource;
     }
@@ -101,11 +101,19 @@ public class BookingController {
         // Insert booking into database
         String insertSql = "INSERT INTO booking (bookingstatus, staffid, custid, packageid, bookingstartdate, bookingenddate) VALUES (?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(insertSql, "Pending", null, custId, packageId, bookingStartDate, bookingEndDate);
+        // jdbcTemplate.execute(insertSql);
 
         // Redirect to payment page with total price
         String packageSql = "SELECT packageprice FROM package WHERE packageid = ?";
         Double totalPrice = jdbcTemplate.queryForObject(packageSql, Double.class, packageId);
+        session.setAttribute("totalPrice", totalPrice);
         model.addAttribute("totalPrice", totalPrice);
+
+        // Get bookingId to set it as an attribute of the session
+        // String sql = "SELECT bookingId FROM booking WHERE bookingStatus = ? AND custid = ? AND packageid = ? AND bookingstartdate = ? AND bookingenddate = ?";
+        String sql = "SELECT bookingId FROM booking ORDER BY bookingId DESC LIMIT 1;";
+        Long bookingId = jdbcTemplate.queryForObject(sql, Long.class);
+        session.setAttribute("bookingId", bookingId);
 
         return "redirect:/payment";
     }
@@ -203,14 +211,14 @@ public class BookingController {
     
     @PostMapping("/deleteBooking/{id}")
     public String deleteBooking(@PathVariable("id") Long bookingId, HttpSession session) {
-        Long custid = (Long) session.getAttribute("custid");
-        if (custid == null) {
-            return "redirect:/custLogin";
+        Staff staff = (Staff) session.getAttribute("staff");
+        if (staff == null) {
+            return "redirect:/staffLogin";
         }
 
         String sql = "DELETE FROM public.booking WHERE bookingid = ?";
         jdbcTemplate.update(sql, bookingId);
-        return "redirect:/custViewBooking";
+        return "redirect:/staffViewBooking";
     }
 }
 

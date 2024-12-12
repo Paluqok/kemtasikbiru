@@ -38,6 +38,11 @@ public class Package {
 
     public double getPackagePrice() {
         return packagePrice;
+        // int totalPrice = 0;
+        // for (Activity act : this.activities) {
+        //     totalPrice += act.getActivityPrice();
+        // }
+        // return totalPrice;
     }
 
     public void setPackagePrice(double packagePrice) {

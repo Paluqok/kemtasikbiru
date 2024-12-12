@@ -18,7 +18,7 @@ public class Staff {
 		this.staffPhoneNo=staffPhoneNo;
 		this.staffAddress=staffAddress;
 		this.staffPassword=staffPassword;
-		this.managerId=managerId; 
+		this.managerId=managerId;
 	}
 	
 	

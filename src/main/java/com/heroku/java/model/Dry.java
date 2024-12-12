@@ -5,11 +5,16 @@ public class Dry extends Activity {
 
     public Dry() {}
 
-    public Dry(Long activityId, String activityName, String activityDuration, double activityPrice, String activityImage, String activityLocation) {
-        super(activityId, activityName, activityDuration, activityPrice, activityImage);
+    public Dry(Long activityId, String activityName, String activityDuration, double activityPrice, String activityImagePath, String activityLocation) {
+        super(activityId, activityName, activityDuration, activityPrice, activityImagePath);
         this.activityLocation = activityLocation;
     }
 
     public String getActivityLocation() { return activityLocation; }
     public void setActivityLocation(String activityLocation) { this.activityLocation = activityLocation; }
+
+    @Override
+    public String toString() {
+        return "Dry";
+    }
 }

@@ -4,44 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    
-  <!-- Boxiocns CDN Link -->
-  <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
-
-  <!-- Base CSS -->
-  <!-- <link rel="stylesheet" th:href="@{stylesheets/css/base.css}"> -->
-  <link rel="stylesheet" th:href="@{/styles.css}">
-
-  <!-- Specific CSS -->
-  <!-- <link rel="stylesheet" th:href="@{stylesheets/css/staffnavbar.css}"> -->
-
 </head>
 <body>
-    <header>
-    <!-- Navbar -->
-    <div th:insert="~{fragments/staffnavbar::navbar}"></div>
-    <!-- <div class="sidebar close">
+  <nav th:fragment="navbar">
+    <div class="sidebar close">
         <div class="logo-details">
           <i class='bx bxl-c-plus-plus'></i>
           <span class="logo_name">KemTasikBiru</span>
         </div>
         <ul class="nav-links">
           <li>
-            <a href="#">
+            <a th:href="@{/homeStaff}">
               <i class='bx bx-grid-alt' ></i>
               <span class="link_name">Home</span>
             </a>
             <ul class="sub-menu blank">
-              <li><a class="link_name" href="#">Home</a></li>
+              <li><a class="link_name" th:href="@{/homeStaff}">Home</a></li>
             </ul>
           </li>
           <li>
-            <a href="#">
+            <a th:href="@{/listPackages}">
               <i class='bx bx-pie-chart-alt-2' ></i>
               <span class="link_name">Package</span>
             </a>
             <ul class="sub-menu blank">
-              <li><a class="link_name" href="#">Package</a></li>
+              <li><a class="link_name" th:href="@{/listPackages}">Package</a></li>
             </ul>
           </li>
           <li>
@@ -54,8 +41,17 @@
             </ul>
           </li>
           <li>
+            <a th:href="@{/staffViewBooking}">
+              <i class='bx bx-bookmarks'></i>
+              <span class="link_name">Bookings</span>
+            </a>
+            <ul class="sub-menu blank">
+              <li><a class="link_name" th:href="@{/staffViewBooking}">Bookings</a></li>
+            </ul>
+          </li>
+          <li>
             <a href="#">
-              <i class='bx bx-compass' ></i>
+              <i class='bx bx-history'></i>
               <span class="link_name">History</span>
             </a>
             <ul class="sub-menu blank">
@@ -64,7 +60,7 @@
           </li>
           <li>
             <a th:href="@{/staffProfile}">
-              <i class='bx bx-history'></i>
+              <i class='bx bx-user-circle'></i>
               <span class="link_name">Profile</span>
             </a>
             <ul class="sub-menu blank">
@@ -72,48 +68,42 @@
             </ul>
           </li>
           <li>
-        <div class="profile-details">
-          <div class="profile-content">
-            <img src="image/profile.jpg" alt="profileImg">
-          </div>
-          <div class="name-job">
-            <div class="profile_name">Log Out</div>
-          </div>
-          <i class='bx bx-log-out' ></i>
-        </div>
-      </li>
-    </ul>
+            <div class="profile-details">
+              <div class="profile-content">
+                <!--<img src="image/profile.jpg" alt="profileImg">-->
+              </div>
+              <div class="name-job">
+                <a th:href="@{/logoutStaff}" class="profile_name">Log Out</a>
+              </div>
+              <a th:href="@{/logoutStaff}"><i class='bx bx-log-out' ></i></a>
+            </div>
+          </li>
+        </ul>
+    </div>
+    <section class="home-section">
+      <div class="home-content">
+          <i class='bx bx-menu'></i> Staff
+          <!-- <span th:if="">Staff</span>
+          <span th:unless="">Managerial</span> -->
       </div>
-      <section class="home-section">
-        <div class="home-content">
-          <i class='bx bx-menu' ></i>
-        </div>
-      </section> -->
-      <!-- Navbar -->
-    </header>
-  
-    <main>
-        
-    </main>
-  
-    <footer></footer>
-  
+    </section>
+
     <!--<Script for Navbar>-->
       <script>
         let arrow = document.querySelectorAll(".arrow");
         for (var i = 0; i < arrow.length; i++) {
-          arrow[i].addEventListener("click", (e)=>{
-         let arrowParent = e.target.parentElement.parentElement;//selecting main parent of arrow
-         arrowParent.classList.toggle("showMenu");
-          });
+            arrow[i].addEventListener("click", (e)=>{
+                let arrowParent = e.target.parentElement.parentElement;//selecting main parent of arrow
+                arrowParent.classList.toggle("showMenu");
+            });
         }
         let sidebar = document.querySelector(".sidebar");
         let sidebarBtn = document.querySelector(".bx-menu");
         console.log(sidebarBtn);
         sidebarBtn.addEventListener("click", ()=>{
-          sidebar.classList.toggle("close");
+            sidebar.classList.toggle("close");
         });
-        </script>
-    </header>
+    </script>
+  </nav>
 </body>
 </html>

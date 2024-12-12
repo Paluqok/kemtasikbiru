@@ -42,34 +42,18 @@
 <header>
     <!-- Navbar -->
     <div th:insert="~{fragments/custnavbar::navbar}"></div>
-    <!--<Script for Navbar>-->
-    <script>
-        let arrow = document.querySelectorAll(".arrow");
-        for (var i = 0; i < arrow.length; i++) {
-            arrow[i].addEventListener("click", (e)=>{
-                let arrowParent = e.target.parentElement.parentElement;//selecting main parent of arrow
-                arrowParent.classList.toggle("showMenu");
-            });
-        }
-        let sidebar = document.querySelector(".sidebar");
-        let sidebarBtn = document.querySelector(".bx-menu");
-        console.log(sidebarBtn);
-        sidebarBtn.addEventListener("click", ()=>{
-            sidebar.classList.toggle("close");
-        });
-    </script>
-    <!-- Navbar -->
 </header>
 <div class="container">
-    <div class="row">
+    <!-- <div class="row">
         <div class="col-12 text-right">
             <a th:href="@{/createActivity}" class="btn btn-primary">Create Activity</a>
         </div>
-    </div>
+    </div> -->
     <div class="row">
         <div th:each="activity : ${activities}" class="col-md-3">
             <div class="card">
-                <img th:src="@{'/images/' + ${activity.activityImage}}" alt="Activity Image" />
+                <!-- <img th:src="@{'/images/' + ${activity.activityImage}}" alt="Activity Image" /> -->
+                <img th:src="@{'/images/' + ${activity.getActivityImagePath()}}" alt="Activity Image" />
                 <div class="card-body">
                     <h5 class="card-title" th:text="${activity.activityName}">ActivityName</h5>
                     <p class="card-text">

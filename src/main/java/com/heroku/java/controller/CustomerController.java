@@ -137,6 +137,15 @@ public class CustomerController {
         }
     }
 
+    @GetMapping("/logoutCust")
+    public String custLogout(HttpSession session) throws LoginException {
+        session.removeAttribute("custname");
+        session.removeAttribute("custid");
+        session.removeAttribute("cust");
+
+        return "redirect:/custLogin";
+    }
+
     @GetMapping("/homeCustomer")
     public String homeCustomer(HttpSession session, Model model) {
         Long custId = (Long) session.getAttribute("custid");

@@ -28,48 +28,37 @@
             left: 10px;
         }
     </style>
-   <script>
-    function validateEmailAndPhoneAndPassword() {
-        const emailField = document.getElementById('staffEmail');
-        const emailValue = emailField.value;
-        const gmailPattern = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+    <script>
+        function validateEmailAndPhoneAndPassword() {
+            const emailField = document.getElementById('staffEmail');
+            const emailValue = emailField.value;
+            const gmailPattern = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
 
-        if (!gmailPattern.test(emailValue)) {
-            alert('Please enter a valid Gmail address (ending with @gmail.com).');
-            return false;
-        }
-        const phoneField = document.getElementById('staffPhoneNo');
-        const phoneValue = phoneField.value;
-        const phonePattern = /^01\d-?\d{7,8}$/;
+            if (!gmailPattern.test(emailValue)) {
+                alert('Please enter a valid Gmail address (ending with @gmail.com).');
+                return false;
+            }
+            const phoneField = document.getElementById('staffPhoneNo');
+            const phoneValue = phoneField.value;
+            const phonePattern = /^01\d-?\d{7,8}$/;
 
-        if (!phonePattern.test(phoneValue)) {
-            alert('Please enter a valid phone number (01x-xxxxxxxx or 01xxxxxxxxx).');
-            return false;
-        }
+            if (!phonePattern.test(phoneValue)) {
+                alert('Please enter a valid phone number (01x-xxxxxxxx or 01xxxxxxxxx).');
+                return false;
+            }
 
-        const passField = document.getElementById('staffPassword');
-        const passValue = passField.value;
-        const checkField = document.getElementById('checkPassword');
-        const checkValue = checkField.value;
+            const passField = document.getElementById('staffPassword');
+            const passValue = passField.value;
+            const checkField = document.getElementById('checkPassword');
+            const checkValue = checkField.value;
 
-        if (passValue !== checkValue) {
-            alert('The passwords you entered do not match. Please try again.');
-            return false;
-        }
-        return true;
-    }
-
-    function toggleManagerDropdown() {
-        const isStaff = document.getElementById('staff').checked;
-        document.getElementById('managerDropdown').style.display = isStaff ? 'block' : 'none';
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('input[name="userType"]').forEach(input => {
-            input.addEventListener('change', toggleManagerDropdown);
-        });
-    });
-</script>
+            if (passValue !== checkValue) {
+                alert('The passwords you entered do not match. Please try again.');
+                return false;
+            }
+            return true;
+        }Xr
+    </script>
 </head>
 <body>
     <div class="container">
@@ -101,19 +90,11 @@
                 <input type="password" class="form-control" id="checkPassword" name="checkPassword" required>
             </div>
             <div class="form-group">
-                <label for="userType">User Type:</label><br>
+                <label for="activityType">User Type:</label><br>
                 <label for="staff">Staff</label>
                 <input type="radio" id="staff" name="userType" value="staff">
                 <label for="manager">Manager</label>
                 <input type="radio" id="manager" name="userType" value="manager">
-            </div>
-            <div class="form-group" id="managerDropdown" style="display: none;">
-                <label for="managerId">Select Manager:</label>
-                <select id="managerId" name="managerId" class="form-control">
-                    <option value="">-- Select Manager --</option>
-                    <!-- Options will be populated dynamically -->
-                    <option th:each="manager : ${managers}" th:value="${manager.staffId}" th:text="${manager.staffName}"></option>
-                </select>
             </div>
             <button type="submit" class="btn btn-primary">Sign Up</button>
 

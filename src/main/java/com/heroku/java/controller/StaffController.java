@@ -2,8 +2,6 @@ package com.heroku.java.controller;
 
 import java.io.IOException;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.security.auth.login.LoginException;
 import javax.sql.DataSource;
@@ -35,24 +33,7 @@ public class StaffController {
     }
      
     @GetMapping("/staffSignUp")
-    public String createStaffAccount(Model model){
-        try (Connection connection = dataSource.getConnection()) {
-            String sql = "SELECT staffid, staffname FROM public.staff WHERE managerid IS NULL";
-            try (PreparedStatement statement = connection.prepareStatement(sql);
-                 ResultSet resultSet = statement.executeQuery()) {
-
-                List<Staff> managers = new ArrayList<>();
-                while (resultSet.next()) {
-                    Staff manager = new Staff();
-                    manager.setStaffId(resultSet.getLong("staffid"));
-                    manager.setStaffName(resultSet.getString("staffname"));
-                    managers.add(manager);
-                }
-                model.addAttribute("managers", managers);
-            }
-        } catch (SQLException e) {
-            logger.error("Error fetching managers", e);
-        }
+    public String createStaffAccount(){
         return "staff/staffSignUp";
     }
 
@@ -61,9 +42,7 @@ public class StaffController {
                                    @RequestParam("staffEmail") String staffEmail,
                                    @RequestParam("staffAddress") String staffAddress,
                                    @RequestParam("staffPhoneNo") String staffPhoneNo,
-                                   @RequestParam("staffPassword") String staffPassword,
-                                   @RequestParam("userType") String userType,
-                                   @RequestParam(value = "managerId", required = false) Long managerId) throws IOException {
+                                   @RequestParam("staffPassword") String staffPassword) throws IOException {
         
         Staff staff = new Staff();
         staff.setStaffName(staffName);
@@ -72,10 +51,7 @@ public class StaffController {
         staff.setStaffPhoneNo(staffPhoneNo);
         staff.setStaffPassword(staffPassword);
 
-        Long assignedManagerId = "staff".equals(userType) ? managerId : null;
-
         try (Connection connection = dataSource.getConnection()) {
-            String staffSql = "INSERT INTO public.staff(staffname, staffemail, staffaddress, staffphoneno, staffpassword, managerid) VALUES (?, ?, ?, ?, ?, ?) RETURNING staffid";
 
             System.out.println("Received staff details:");
             System.out.println("Name: " + staff.getStaffName());
@@ -84,18 +60,14 @@ public class StaffController {
             System.out.println("Phone No: " + staff.getStaffPhoneNo());
             System.out.println("Password: " + staff.getStaffPassword());
 
+            String staffSql = "INSERT INTO public.staff(staffname, staffemail, staffaddress, staffphoneno, staffpassword) VALUES (?, ?, ?, ?, ?) RETURNING staffid";
 
             try (PreparedStatement statement = connection.prepareStatement(staffSql)) {
                 statement.setString(1, staff.getStaffName());
                 statement.setString(2, staff.getStaffEmail());
                 statement.setString(3, staff.getStaffAddress());
                 statement.setString(4, staff.getStaffPhoneNo());
-                statement.setString(5, staff.getStaffPassword());
-                statement.setObject(6, assignedManagerId); // Set the Base64-encoded image
-
-                if ("staff".equals(userType)) {
-                    statement.setLong(6, managerId);
-                }
+                statement.setString(5, staff.getStaffPassword()); // Set the Base64-encoded image
 
                 try (ResultSet resultSet = statement.executeQuery()) {
                     if (resultSet.next()) {
@@ -166,6 +138,18 @@ public class StaffController {
         }
     }
 
+    @GetMapping("/logoutStaff")
+    public String staffLogout(HttpSession session) throws LoginException {
+                            //   @RequestParam("staffEmail") String staffEmail) throws LoginException {
+
+        // logger.info("Attempting to log out staff with email: {}", staffEmail);
+        session.removeAttribute("staffname");
+        session.removeAttribute("staffid");
+        session.removeAttribute("staff");
+
+        return "redirect:/staffLogin";
+    }
+
     @GetMapping("/homeStaff")
     public String homeStaff(HttpSession session, Model model) {
         Long staffId = (Long) session.getAttribute("staffid");
@@ -195,102 +179,101 @@ public class StaffController {
     }
 
     // Serve the update form with current data
-@GetMapping("/staffUpdate")
-public String showUpdateForm(HttpSession session, Model model) {
-    Staff staff = (Staff) session.getAttribute("staff");
-    if (staff == null) {
-        return "redirect:/staffLogin";
-    }
-    model.addAttribute("staff", staff);
-    return "staff/staffUpdate";
-}
-
-// Process the update form
-@PostMapping("/updateStaff")
-public String updateStaff(
-    @RequestParam("staffId") Long staffId,
-    @RequestParam("staffName") String staffName,
-    @RequestParam("staffEmail") String staffEmail,
-    @RequestParam("staffAddress") String staffAddress,
-    @RequestParam("staffPhoneNo") String staffPhoneNo,
-    @RequestParam(value = "staffPassword", required = false) String staffPassword,
-    @RequestParam(value = "checkPassword", required = false) String checkPassword,
-    HttpSession session) throws IOException {
-
-    // Fetch the current staff object from the session
-    Staff currentStaff = (Staff) session.getAttribute("staff");
-    if (currentStaff == null) {
-        return "redirect:/staffLogin";
+    @GetMapping("/staffUpdate")
+    public String showUpdateForm(HttpSession session, Model model) {
+        Staff staff = (Staff) session.getAttribute("staff");
+        if (staff == null) {
+            return "redirect:/staffLogin";
+        }
+        model.addAttribute("staff", staff);
+        return "staff/staffUpdate";
     }
 
-    // Check that the staffId matches the ID of the staff in the session
-    if (!staffId.equals(currentStaff.getStaffId())) {
+    // Process the update form
+    @PostMapping("/updateStaff")
+    public String updateStaff(
+        @RequestParam("staffId") Long staffId,
+        @RequestParam("staffName") String staffName,
+        @RequestParam("staffEmail") String staffEmail,
+        @RequestParam("staffAddress") String staffAddress,
+        @RequestParam("staffPhoneNo") String staffPhoneNo,
+        @RequestParam(value = "staffPassword", required = false) String staffPassword,
+        @RequestParam(value = "checkPassword", required = false) String checkPassword,
+        HttpSession session) throws IOException {
+
+        // Fetch the current staff object from the session
+        Staff currentStaff = (Staff) session.getAttribute("staff");
+        if (currentStaff == null) {
+            return "redirect:/staffLogin";
+        }
+
+        // Check that the staffId matches the ID of the staff in the session
+        if (!staffId.equals(currentStaff.getStaffId())) {
+            return "redirect:/staffProfile";
+        }
+
+        // Update the staff details
+        currentStaff.setStaffName(staffName);
+        currentStaff.setStaffEmail(staffEmail);
+        currentStaff.setStaffAddress(staffAddress);
+        currentStaff.setStaffPhoneNo(staffPhoneNo);
+
+        // Update password only if provided and passwords match
+        if (staffPassword != null && !staffPassword.isEmpty()) {
+            if (staffPassword.equals(checkPassword)) {
+                currentStaff.setStaffPassword(staffPassword);
+            } else {
+                // Add an error message to the model if passwords do not match
+                return "redirect:/staffUpdate?error=true";
+            }
+        }
+
+        // Save the updated staff object
+        try (Connection connection = dataSource.getConnection()) {
+            String staffSql = "UPDATE public.staff SET staffname = ?, staffemail = ?, staffaddress = ?, staffphoneno = ?, staffpassword = ? WHERE staffid = ?";
+
+            try (PreparedStatement statement = connection.prepareStatement(staffSql)) {
+                statement.setString(1, currentStaff.getStaffName());
+                statement.setString(2, currentStaff.getStaffEmail());
+                statement.setString(3, currentStaff.getStaffAddress());
+                statement.setString(4, currentStaff.getStaffPhoneNo());
+                statement.setString(5, currentStaff.getStaffPassword());
+                statement.setLong(6, currentStaff.getStaffId());
+                statement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            logger.error("Failed to update staff", e);
+            throw new RuntimeException("Failed to update staff", e);
+        }
+
+        session.setAttribute("staff", currentStaff);
         return "redirect:/staffProfile";
     }
 
-    // Update the staff details
-    currentStaff.setStaffName(staffName);
-    currentStaff.setStaffEmail(staffEmail);
-    currentStaff.setStaffAddress(staffAddress);
-    currentStaff.setStaffPhoneNo(staffPhoneNo);
-
-    // Update password only if provided and passwords match
-    if (staffPassword != null && !staffPassword.isEmpty()) {
-        if (staffPassword.equals(checkPassword)) {
-            currentStaff.setStaffPassword(staffPassword);
-        } else {
-            // Add an error message to the model if passwords do not match
-            return "redirect:/staffUpdate?error=true";
-        }
-    }
-
-    // Save the updated staff object
-    try (Connection connection = dataSource.getConnection()) {
-        String staffSql = "UPDATE public.staff SET staffname = ?, staffemail = ?, staffaddress = ?, staffphoneno = ?, staffpassword = ? WHERE staffid = ?";
-
-        try (PreparedStatement statement = connection.prepareStatement(staffSql)) {
-            statement.setString(1, currentStaff.getStaffName());
-            statement.setString(2, currentStaff.getStaffEmail());
-            statement.setString(3, currentStaff.getStaffAddress());
-            statement.setString(4, currentStaff.getStaffPhoneNo());
-            statement.setString(5, currentStaff.getStaffPassword());
-            statement.setLong(6, currentStaff.getStaffId());
-            statement.executeUpdate();
-        }
-    } catch (SQLException e) {
-        logger.error("Failed to update staff", e);
-        throw new RuntimeException("Failed to update staff", e);
-    }
-
-    session.setAttribute("staff", currentStaff);
-    return "redirect:/staffProfile";
-}
-
 
     @PostMapping("/deleteStaff")
-public String deleteStaff(HttpSession session) {
-    Long staffId = (Long) session.getAttribute("staffid");
-    if (staffId == null) {
-        logger.warn("staffId is null in session");
+    public String deleteStaff(HttpSession session) {
+        Long staffId = (Long) session.getAttribute("staffid");
+        if (staffId == null) {
+            logger.warn("staffId is null in session");
+            return "redirect:/staffLogin";
+        }
+
+        try (Connection connection = dataSource.getConnection()) {
+            String staffSql = "DELETE FROM public.staff WHERE staffid = ?";
+            try (PreparedStatement statement = connection.prepareStatement(staffSql)) {
+                statement.setLong(1, staffId);
+                statement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            logger.error("Failed to delete staff", e);
+            throw new RuntimeException("Failed to delete staff", e);
+        }
+
+        // Invalidate the session
+        session.invalidate();
+
         return "redirect:/staffLogin";
     }
-
-    try (Connection connection = dataSource.getConnection()) {
-        String staffSql = "DELETE FROM public.staff WHERE staffid = ?";
-        try (PreparedStatement statement = connection.prepareStatement(staffSql)) {
-            statement.setLong(1, staffId);
-            statement.executeUpdate();
-        }
-    } catch (SQLException e) {
-        logger.error("Failed to delete staff", e);
-        throw new RuntimeException("Failed to delete staff", e);
-    }
-
-    // Invalidate the session
-    session.invalidate();
-
-    return "redirect:/staffLogin";
-}
-    
 }
 

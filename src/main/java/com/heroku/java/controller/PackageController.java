@@ -5,7 +5,6 @@ import com.heroku.java.model.Activity;
 import com.heroku.java.model.Customer;
 import com.heroku.java.model.Staff;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Controller;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpSession;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,30 +44,36 @@ public class PackageController {
             activity.setActivityName(rs.getString("activityname"));
             activity.setActivityDuration(rs.getString("activityduration"));
             activity.setActivityPrice(rs.getDouble("activityprice"));
-            activity.setActivityImage(rs.getString("activityimage"));
+            activity.setActivityImagePath(rs.getString("activityimage"));
             return activity;
         }
     };
 
     @GetMapping("/listPackages")
-public String listPackages(HttpSession session, Model model) {
-    Staff staff = (Staff) session.getAttribute("staff");
-    if (staff == null) {
-        return "redirect:/staffLogin";
+    public String listPackages(HttpSession session, Model model) {
+        Staff staff = (Staff) session.getAttribute("staff");
+        if (staff == null) {
+            return "redirect:/staffLogin";
+        }
+
+        String sql = "SELECT * FROM package";
+        List<Package> packages = jdbcTemplate.query(sql, packageRowMapper);
+
+        for (Package pkg : packages) {
+            String actIdSql = "SELECT activityid FROM packageactivity WHERE packageid = " + pkg.getPackageId();
+            List<Integer> actId = jdbcTemplate.queryForList(actIdSql, Integer.class);
+            List<Activity> acts = new ArrayList<Activity>();
+            for (Integer i : actId) {
+                String actSql = "SELECT * FROM activity WHERE activityid = " + i;
+                Activity act = jdbcTemplate.queryForObject(actSql, activityRowMapper);
+                acts.add(act);
+            }
+            pkg.setActivities(acts);
+        }
+        model.addAttribute("packages", packages);
+
+        return "listPackage";
     }
-
-    String sql = "SELECT * FROM package";
-    List<Package> packages = jdbcTemplate.query(sql, packageRowMapper);
-
-    for (Package pkg : packages) {
-        String activitiesSql = "SELECT * FROM activity WHERE activityid IN (SELECT activityid FROM packageactivity WHERE packageid = ?)";
-        List<Activity> activities = jdbcTemplate.query(activitiesSql, activityRowMapper, pkg.getPackageId());
-        pkg.setActivities(activities);
-    }
-
-    model.addAttribute("packages", packages);
-    return "listPackage";
-}
 
     @GetMapping("/listPackagesForCustomer")
     public String listPackagesForCustomer(HttpSession session, Model model) {
@@ -80,12 +86,18 @@ public String listPackages(HttpSession session, Model model) {
         List<Package> packages = jdbcTemplate.query(sql, packageRowMapper);
 
         for (Package pkg : packages) {
-            String activitySql = "SELECT a.* FROM activity a JOIN packageactivity pa ON a.activityid = pa.activityid WHERE pa.packageid = ?";
-            List<Activity> activities = jdbcTemplate.query(activitySql, activityRowMapper, pkg.getPackageId());
-            pkg.setActivities(activities);
+            String actIdSql = "SELECT activityid FROM packageactivity WHERE packageid = " + pkg.getPackageId();
+            List<Integer> actId = jdbcTemplate.queryForList(actIdSql, Integer.class);
+            List<Activity> acts = new ArrayList<Activity>();
+            for (Integer i : actId) {
+                String actSql = "SELECT * FROM activity WHERE activityid = " + i;
+                Activity act = jdbcTemplate.queryForObject(actSql, activityRowMapper);
+                acts.add(act);
+            }
+            pkg.setActivities(acts);
         }
-
         model.addAttribute("packages", packages);
+        
         return "listPackageForCustomer";
     }
 
@@ -128,37 +140,68 @@ public String listPackages(HttpSession session, Model model) {
         return "redirect:/listPackages";
     }
 
-    @GetMapping("/updatePackage/{id}")
-    public String showUpdateForm(@PathVariable("id") int packageId, Model model) {
-        String packageQuery = "SELECT * FROM package WHERE packageid = ?";
-        Package pkg = jdbcTemplate.queryForObject(packageQuery, new BeanPropertyRowMapper<>(Package.class), packageId);
+    @GetMapping("/updatePackage/{packageId}")
+    public String updatePackageForm(@PathVariable Long packageId, HttpSession session, Model model) {
+        Staff staff = (Staff) session.getAttribute("staff");
+        if (staff == null) {
+            return "redirect:/staffLogin";
+        }
 
-        String activityQuery = "SELECT * FROM activity";
-        List<Activity> activities = jdbcTemplate.query(activityQuery, new BeanPropertyRowMapper<>(Activity.class));
+        String sql = "SELECT * FROM package WHERE packageid = ?";
+        Package pkg = jdbcTemplate.queryForObject(sql, packageRowMapper, packageId);
 
-        String chosenActivitiesQuery = "SELECT a.activityid, a.activityname FROM activity a JOIN packageactivity pa ON a.activityid = pa.activityid WHERE pa.packageid = ?";
-        List<Activity> chosenActivities = jdbcTemplate.query(chosenActivitiesQuery, new BeanPropertyRowMapper<>(Activity.class), packageId);
+        String actIdSql = "SELECT activityid FROM packageactivity WHERE packageid = " + pkg.getPackageId();
+        List<Long> actIds = jdbcTemplate.queryForList(actIdSql, Long.class);
+        List<Activity> acts = new ArrayList<Activity>();
+        for (Long i : actIds) {
+            String actSql = "SELECT * FROM activity WHERE activityid = " + i;
+            Activity act = jdbcTemplate.queryForObject(actSql, activityRowMapper);
+            acts.add(act);
+        }
+        pkg.setActivities(acts);
+
+        String activitySql = "SELECT * FROM activity";
+        List<Activity> activities = jdbcTemplate.query(activitySql, activityRowMapper);
+        
+        List<Activity> chosenActivities = pkg.getActivities();
+        List<Activity> unchosenActivities = new ArrayList<Activity>();
+        unchosenActivities.addAll(activities);
+        // for (int i = 0; i < activities.size(); i++) {
+        for (Activity a : activities) {
+            if (actIds.contains(a.getActivityId())) {
+                unchosenActivities.remove(a);
+            }
+        }
 
         model.addAttribute("package", pkg);
-        model.addAttribute("activities", activities);
         model.addAttribute("chosenActivities", chosenActivities);
+        model.addAttribute("activities", unchosenActivities);
         return "updatePackage";
     }
 
-    @PostMapping("/updatePackage/{id}")
-    public String updatePackage(@PathVariable("id") int packageId,
-                                @RequestParam("packageName") String packageName,
-                                @RequestParam("packagePrice") double packagePrice,
-                                @RequestParam("activityIds") List<Integer> activityIds) {
-        String updatePackageQuery = "UPDATE package SET packagename = ?, packageprice = ? WHERE packageid = ?";
-        jdbcTemplate.update(updatePackageQuery, packageName, packagePrice, packageId);
+    @PostMapping("/updatePackage/{packageId}")
+    public String updatePackage(HttpSession session, @RequestParam Long packageId, @RequestParam String packageName, @RequestParam List<Long> activityIds) {
+        Staff staff = (Staff) session.getAttribute("staff");
+        if (staff == null) {
+            return "redirect:/staffLogin";
+        }
 
-        String deleteActivitiesQuery = "DELETE FROM packageactivity WHERE packageid = ?";
-        jdbcTemplate.update(deleteActivitiesQuery, packageId);
+        String sql = "SELECT * FROM activity WHERE activityid IN (" + 
+                      activityIds.stream().map(String::valueOf).collect(Collectors.joining(",")) + ")";
+        List<Activity> selectedActivities = jdbcTemplate.query(sql, activityRowMapper);
+        double packagePrice = selectedActivities.stream()
+                .mapToDouble(Activity::getActivityPrice)
+                .sum();
 
-        for (Integer activityId : activityIds) {
-            String insertActivityQuery = "INSERT INTO packageactivity (packageid, activityid) VALUES (?, ?)";
-            jdbcTemplate.update(insertActivityQuery, packageId, activityId);
+        String updatePackageSql = "UPDATE package SET packagename = ?, packageprice = ? WHERE packageid = ?";
+        jdbcTemplate.update(updatePackageSql, packageName, packagePrice, packageId);
+
+        String deletePackageActivitySql = "DELETE FROM packageactivity WHERE packageid = ?";
+        jdbcTemplate.update(deletePackageActivitySql, packageId);
+
+        for (Activity activity : selectedActivities) {
+            String insertPackageActivitySql = "INSERT INTO packageactivity (packageid, activityid) VALUES (?, ?)";
+            jdbcTemplate.update(insertPackageActivitySql, packageId, activity.getActivityId());
         }
 
         return "redirect:/listPackages";
