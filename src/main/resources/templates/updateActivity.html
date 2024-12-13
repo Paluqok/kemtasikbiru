@@ -121,6 +121,12 @@
     
     <script>
     function toggleInput(option) {
+
+      function submitForm() {
+      document.getElementById("updateActivityForm").submit();
+      }
+
+
       document.getElementById('equipmentDiv').classList.add('hidden');
       document.getElementById('locationDiv').classList.add('hidden');
       // document.getElementById('equipment').value = '';
@@ -154,7 +160,7 @@
                 Are you sure you want to update this activity?
             </div>
             <div class="modal-footer">
-                <button type="submit" class="btn btn-primary" onclick="submitForm()">Confirm </button>
+                <button type="button" class="btn btn-primary" onclick="submitForm()">Confirm </button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
             </div>
         </div>
