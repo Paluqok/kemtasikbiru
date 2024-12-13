@@ -78,9 +78,6 @@
         <div class="btn-container">
             <a th:href="@{/custUpdate}" class="btn btn-info">Update</a>
             <form action="/deleteCustomer" method="post">
-                <button type="submit" class="btn btn-danger">Delete</button>
-            </form>
-            <form action="/deleteCustomer" method="post">
                 <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteAccountModal">
                     Delete
                 </button>
@@ -114,7 +111,7 @@
             // Create a form dynamically to submit the delete request
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = '/deleteStaff'; // Backend endpoint
+            form.action = '/deleteCustomer'; // Backend endpoint
     
             // Append the form to the body and submit
             document.body.appendChild(form);
