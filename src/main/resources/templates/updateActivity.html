@@ -116,15 +116,34 @@
           Update
         </button>
         <a th:href="@{/listActivity}" class="btn btn-secondary">Cancel</a>
+
+        <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <h5 class="modal-title" id="confirmModalLabel">Confirmation</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                      </button>
+                  </div>
+                  <div class="modal-body">
+                      Are you sure you want to update this activity?
+                  </div>
+                  <div class="modal-footer">
+                      <button type="submit" class="btn btn-primary">Confirm </button>
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                  </div>
+              </div>
+          </div>
+        </div>
+
       </form>
     </div>
     
     <script>
     function toggleInput(option) {
 
-      function submitForm() {
-      document.getElementById("updateActivityForm").submit();
-      }
+      
 
 
       document.getElementById('equipmentDiv').classList.add('hidden');
@@ -147,24 +166,6 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
     <!-- Modal -->
-  <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="confirmModalLabel">Confirmation</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                Are you sure you want to update this activity?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" onclick="submitForm()">Confirm </button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-            </div>
-        </div>
-    </div>
-  </div>
+  
 </body>
 </html>
