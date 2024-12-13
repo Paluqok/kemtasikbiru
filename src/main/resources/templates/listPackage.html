@@ -103,16 +103,16 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
-    if (confirmDeleteBtn) {
-        confirmDeleteBtn.addEventListener('click', function () {
-            if (packageIdToDelete) {
-                window.location.href = '/deletePackage/' + packageIdToDelete;
-            }
-        });
-    } else {
-        console.error('Element with id "confirmDeleteBtn" not found.');
+    let packageIdToDelete = null;
+
+function showDeleteModal(packageId) {
+    packageIdToDelete = packageId;
+    $('#deleteConfirmModal').modal('show');
+}
+
+document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
+    if (packageIdToDelete) {
+        window.location.href = '/deletePackage/' + packageIdToDelete;
     }
 });
 </script>
