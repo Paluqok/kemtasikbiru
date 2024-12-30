@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!--<!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
@@ -40,10 +40,6 @@
                     </div>
                 </th:block>
             </div>
-            <!-- <div class="form-group">
-                <label for="totalPrice">Total Price:</label>
-                <input type="text" id="totalPrice" name="totalPrice" class="form-control" readonly>
-            </div> -->
             <button type="submit" class="btn btn-success">Submit</button>
         </div>
     </form>
@@ -74,6 +70,111 @@
             const packagePrice = this.getAttribute('data-price');
             document.getElementById('totalPrice').value = packagePrice;
         });
+    });
+</script>
+</body>
+</html>-->
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Booking</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Create Booking</h1>
+    <form id="bookingForm" th:action="@{/createBooking}" method="post">
+        <div class="form-group">
+            <label for="bookingStartDate">Booking Start Date:</label>
+            <input type="datetime-local" id="bookingStartDate" name="bookingStartDate" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="bookingEndDate">Booking End Date:</label>
+            <input type="datetime-local" id="bookingEndDate" name="bookingEndDate" class="form-control" required>
+        </div>
+        <button type="button" id="checkButton" class="btn btn-primary">Check Package</button>
+        <div id="availabilityMessage"></div>
+        <div id="packageSelection" style="display:none;">
+            <h3>Select Package</h3>
+            <div class="form-group">
+                <th:block th:each="pkg : ${packages}">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="packageId" th:id="${pkg.packageId}" th:value="${pkg.packageId}" required>
+                        <label class="form-check-label" th:for="${pkg.packageId}" th:text="${pkg.packageName} + ' (RM' + ${pkg.packagePrice} + ')' "></label>
+                    </div>
+                </th:block>
+            </div>
+            <button type="submit" class="btn btn-success">Submit</button>
+        </div>
+    </form>
+</div>
+<script>
+    document.getElementById('checkButton').addEventListener('click', function() {
+        const startDate = document.getElementById('bookingStartDate').value;
+        const endDate = document.getElementById('bookingEndDate').value;
+
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const diffDays = (end - start) / (1000 * 60 * 60 * 24);
+
+        if (diffDays > 3) {
+            document.getElementById('availabilityMessage').innerText = 'Booking not available for more than 3 days';
+            document.getElementById('packageSelection').style.display = 'none';
+            return;
+        }
+
+        fetch(`/checkPackages?startDate=${startDate}&endDate=${endDate}`)
+            .then(response => response.json())
+            .then(data => {
+                const packages = data.packages;
+                if (packages.length === 0) {
+                    document.getElementById('availabilityMessage').innerText = 'No packages available for the selected dates.';
+                    document.getElementById('packageSelection').style.display = 'none';
+                } else {
+                    document.getElementById('availabilityMessage').innerText = 'Available packages:';
+                    const packageContainer = document.querySelector('#packageSelection .form-group');
+                    packageContainer.innerHTML = '';
+                    packages.forEach(pkg => {
+                        const div = document.createElement('div');
+                        div.classList.add('form-check');
+
+                        const input = document.createElement('input');
+                        input.type = 'radio';
+                        input.classList.add('form-check-input');
+                        input.name = 'packageId';
+                        input.id = pkg.packageId;
+                        input.value = pkg.packageId;
+
+                        const label = document.createElement('label');
+                        label.classList.add('form-check-label');
+                        label.htmlFor = pkg.packageId;
+                        label.innerText = `${pkg.packageName} (RM${pkg.packagePrice})`;
+
+                        div.appendChild(input);
+                        div.appendChild(label);
+                        packageContainer.appendChild(div);
+                    });
+                    document.getElementById('packageSelection').style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching packages:', error);
+                document.getElementById('availabilityMessage').innerText = 'Error fetching package availability.';
+                document.getElementById('packageSelection').style.display = 'none';
+            });
     });
 </script>
 </body>

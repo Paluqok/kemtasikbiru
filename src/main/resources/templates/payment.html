@@ -1,23 +1,19 @@
-<!DOCTYPE html>
+<!--<!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment</title>
     
-    <!-- Boxiocns CDN Link -->
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
     
     <link rel="stylesheet" th:href="@{/styles.css}">
 
-    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
     <header>
-      <!-- Navbar -->
       <div th:insert="~{fragments/custnavbar::navbar}"></div>
-      <!-- Navbar -->
     </header>
     <div class="container">
         <h1>Payment</h1>
@@ -35,5 +31,37 @@
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
     </div>
+</body>
+</html>-->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment</title>
+    <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+<header>
+    <div th:insert="~{fragments/custnavbar::navbar}"></div>
+</header>
+<div class="container">
+    <h1>Payment</h1>
+    <img th:src="@{/stylesheets/img/qr.jpg}" alt="QR Code" class="img-fluid">
+    <form th:action="@{/submitPayment}" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="paymentReceipt">Upload Payment Receipt:</label>
+            <input type="file" id="paymentReceipt" name="paymentReceipt" class="form-control" required>
+            <small>Please make sure your image file is JPG/JPEG.</small>
+        </div>
+        <div class="form-group">
+            <label for="totalPrice">Total Price:</label>
+            <input type="text" id="totalPrice" name="totalPrice" class="form-control" th:value="${totalPrice}" readonly>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
 </body>
 </html>
