@@ -293,5 +293,58 @@ public String createBooking(@RequestParam("bookingStartDate") LocalDateTime book
         jdbcTemplate.update(sql, bookingId);
         return "redirect:/staffViewBooking";
     }
+
+    @GetMapping("/checkPackages")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> checkPackages(@RequestParam("startDate") String startDateStr,
+                                                          @RequestParam("endDate") String endDateStr) {
+    try {
+        // Parse the date strings
+        LocalDateTime startDate = LocalDateTime.parse(startDateStr);
+        LocalDateTime endDate = LocalDateTime.parse(endDateStr);
+        
+        // Check the date duration
+        long daysBetween = java.time.Duration.between(startDate, endDate).toDays();
+        if (daysBetween > 3) {
+            // You can also return an error message here
+            return ResponseEntity.badRequest().body(Collections.singletonMap("error", "Booking not available for more than 3 days"));
+        }
+        
+        // Query available packages based on the date
+        String sql = "SELECT p.*, COUNT(pa.activityid) AS activity_count FROM package p " +
+                     "LEFT JOIN packageactivity pa ON p.packageid = pa.packageid " +
+                     "GROUP BY p.packageid";
+        List<Package> packages = jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Package pkg = new Package();
+            pkg.setPackageId(rs.getLong("packageid"));
+            pkg.setPackageName(rs.getString("packagename"));
+            pkg.setPackagePrice(rs.getDouble("packageprice"));
+            pkg.setActivityCount(rs.getInt("activity_count"));
+            return pkg;
+        });
+
+        // Filter packages based on activity count and booking days
+        packages = packages.stream()
+            .filter(pkg -> {
+                int activityCount = pkg.getActivityCount();
+                long bookingDays = java.time.Duration.between(startDate, endDate).toDays() + 1;
+                if ((activityCount >= 8 && bookingDays == 3) || 
+                    (activityCount <= 3 && bookingDays == 1) || 
+                    (activityCount >= 4 && activityCount <= 7 && bookingDays == 2)) {
+                    return true;
+                }
+                return false;
+            })
+            .collect(Collectors.toList());
+        
+        // Return available packages in the response
+        Map<String, Object> response = new HashMap<>();
+        response.put("packages", packages);
+        return ResponseEntity.ok(response);
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                             .body(Collections.singletonMap("error", "An error occurred while checking package availability"));
+    }
+}
 }
 
