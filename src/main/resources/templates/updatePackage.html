@@ -15,6 +15,9 @@
 </head>
 <!-- <body onload="includeSelectedActivitiesInFormData"> -->
 <body>
+    <div id="successPopup" class="alert alert-success hidden" role="alert">
+        Package updated successfully!
+    </div>
     <header>
         <!-- Navbar -->
         <div th:insert="~{fragments/staffnavbar::navbar}"></div>
@@ -43,9 +46,6 @@
 
     </style>
             <!-- Success Popup -->
-<div id="successPopup" class="alert alert-success hidden" role="alert">
-    Package updated successfully!
-</div>
     <div class="container">
         <div class="row my-3">
             <div class="col-12">
@@ -151,9 +151,19 @@
         }
 
         // When form is submitted, make sure selected activities are included in the form data
-
+        document.querySelector('form').addEventListener('submit', function() {
+            const selectedActivities = document.getElementById('selectedActivities');
+            const selectedValues = Array.from(selectedActivities.options).map(option => option.value);
+            document.querySelector('input[name="activityIds"]').value = selectedValues.join(',');
+        });
         // Show Success Popup if Update Was Successful
-    
+        
+        document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
+    if (packageIdToDelete) {
+        window.location.href = '/updatePackage/' + '?deleteSuccess=true';
+    }
+});
+
         document.addEventListener('DOMContentLoaded', function () {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('updateSuccess') === 'true') {

@@ -136,14 +136,15 @@
 
     // Ensure selected activities are included in form submission
     document.querySelector('form').addEventListener('submit', function() {
-        const selectedActivities = document.getElementById('selectedActivities');
-        const selectedValues = Array.from(selectedActivities.options).map(option => option.value);
+    const selectedActivities = document.getElementById('selectedActivities');
+    Array.from(selectedActivities.options).forEach(option => {
         const hiddenInput = document.createElement('input');
         hiddenInput.type = 'hidden';
         hiddenInput.name = 'activityIds';
-        hiddenInput.value = selectedValues.join(',');
+        hiddenInput.value = option.value;
         this.appendChild(hiddenInput);
     });
+});
 </script>
 </body>
 </html>
