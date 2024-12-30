@@ -59,7 +59,7 @@ public class Package {
     }
 
     public int activityCount() {
-        this.activityCount = activityCount;
+        return activityCount;
     }
 
     public void setActivityCount(int activityCount) {
