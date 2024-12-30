@@ -7,6 +7,7 @@ public class Package {
     private String packageName;
     private double packagePrice;
     private List<Activity> activities;
+    private int activityCount;
 
     // Default constructor
     public Package() {}
@@ -55,6 +56,14 @@ public class Package {
 
     public void setActivities(List<Activity> activities) {
         this.activities = activities;
+    }
+
+    public int activityCount() {
+        this.activityCount = activityCount;
+    }
+
+    public void setActivityCount(int activityCount) {
+        this.activityCount = activityCount;
     }
 }
 

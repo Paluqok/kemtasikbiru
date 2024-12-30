@@ -74,36 +74,35 @@ public class PaymentController {
     }*/
     
     @PostMapping("/submitPayment")
-    public String submitPayment(@RequestParam("paymentReceipt") MultipartFile paymentReceipt,
-                                HttpSession session) throws IOException {
-        Booking tempBooking = (Booking) session.getAttribute("tempBooking");
-        Double totalPrice = (Double) session.getAttribute("totalPrice");
+public String submitPayment(@RequestParam("paymentReceipt") MultipartFile paymentReceipt,
+                            HttpSession session) throws IOException {
+    Booking tempBooking = (Booking) session.getAttribute("tempBooking");
+    Double totalPrice = (Double) session.getAttribute("totalPrice");
 
-        if (tempBooking == null || totalPrice == null) {
-            return "redirect:/createBooking";
-        }
-
-        // Save booking into database and retrieve the generated booking ID reliably
-        String insertBookingSql = "INSERT INTO booking (bookingstatus, staffid, custid, packageid, bookingstartdate, bookingenddate) VALUES (?, ?, ?, ?, ?, ?) RETURNING bookingid";
-        Long bookingId = jdbcTemplate.queryForObject(insertBookingSql, Long.class,
-                tempBooking.getBookingStatus(),
-                tempBooking.getStaffId(),
-                tempBooking.getCustId(),
-                tempBooking.getPackageId(),
-                tempBooking.getBookingStartDate(),
-                tempBooking.getBookingEndDate());
-
-        // Save payment details
-        Payment payment = new Payment();
-        payment.setBookingId(bookingId);
-        payment.setPaymentDate(LocalDateTime.now());
-        payment.setPaymentReceipt(paymentReceipt.getBytes());
-
-        String insertPaymentSql = "INSERT INTO payment (bookingid, paymentdate, paymentreceipt) VALUES (?, ?, ?)";
-        jdbcTemplate.update(insertPaymentSql, payment.getBookingId(), payment.getPaymentDate(), payment.getPaymentReceipt());
-
-        return "redirect:/custViewBooking";
+    if (tempBooking == null || totalPrice == null) {
+        return "redirect:/createBooking";
     }
+
+    // Save booking into database
+    String insertBookingSql = "INSERT INTO booking (bookingstatus, staffid, custid, packageid, bookingstartdate, bookingenddate) VALUES (?, ?, ?, ?, ?, ?)";
+    jdbcTemplate.update(insertBookingSql, tempBooking.getBookingStatus(), tempBooking.getStaffId(), tempBooking.getCustId(),
+            tempBooking.getPackageId(), tempBooking.getBookingStartDate(), tempBooking.getBookingEndDate());
+
+    // Retrieve the generated booking ID
+    String bookingIdSql = "SELECT bookingId FROM booking ORDER BY bookingId DESC LIMIT 1";
+    Long bookingId = jdbcTemplate.queryForObject(bookingIdSql, Long.class);
+
+    // Save payment details
+    Payment payment = new Payment();
+    payment.setBookingId(bookingId);
+    payment.setPaymentDate(LocalDateTime.now());
+    payment.setPaymentReceipt(paymentReceipt.getBytes());
+
+    String insertPaymentSql = "INSERT INTO payment (bookingid, paymentdate, paymentreceipt) VALUES (?, ?, ?)";
+    jdbcTemplate.update(insertPaymentSql, payment.getBookingId(), payment.getPaymentDate(), payment.getPaymentReceipt());
+
+    return "redirect:/custViewBooking";
+}
 
     // Function throws IOException if it fails to read the bytes of the image of the payment receipt
     @GetMapping("/paymentreceipt/{bookingid}")
