@@ -247,7 +247,7 @@ public class StaffController {
         }
 
         session.setAttribute("staff", currentStaff);
-        return "redirect:/staffProfile";
+        return "redirect:/staffProfile?updateSuccess=true";
     }
 
 
@@ -273,7 +273,7 @@ public class StaffController {
         // Invalidate the session
         session.invalidate();
 
-        return "redirect:/staffLogin";
+        return "redirect:/staffLogin?deleteSuccess=true";
     }
 }
 
