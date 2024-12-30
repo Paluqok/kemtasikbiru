@@ -13,6 +13,9 @@
     <div id="createSuccessPopup" class="alert alert-success hidden" role="alert">
         Package created successfully!
     </div>
+    <div id="updateSuccessPopup" class="alert alert-success hidden" role="alert">
+        Package updates successfully!
+    </div>
     <div id="deleteSuccessPopup" class="alert alert-success hidden" role="alert">
         Package deleted successfully!
     </div>
@@ -118,41 +121,57 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const urlParams = new URLSearchParams(window.location.search);
-            const successParam = urlParams.get('createSuccess');
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    // Check for createSuccess
+    const createSuccessParam = urlParams.get('createSuccess');
+    if (createSuccessParam === 'true') {
+        const popup = document.getElementById('createSuccessPopup');
+        if (popup) {
+            popup.classList.add('show');
+            popup.classList.remove('hidden');
+            setTimeout(() => {
+                popup.classList.remove('show');
+                popup.classList.add('hidden');
+                const url = new URL(window.location);
+                url.searchParams.delete('createSuccess');
+                window.history.replaceState({}, '', url);
+            }, 3000);
+        }
+    }
 
-            if (successParam === 'true') {
-                const popup = document.getElementById('createSuccessPopup');
-                if (popup) {
-                    popup.classList.add('show');
-                    popup.classList.remove('hidden');
+    // Check for deleteSuccess
+    if (urlParams.get('deleteSuccess') === 'true') {
+        const popup = document.getElementById('deleteSuccessPopup');
+        popup.classList.add('show');
+        popup.classList.remove('hidden');
+        setTimeout(() => {
+            popup.classList.remove('show');
+            popup.classList.add('hidden');
+            const url = new URL(window.location);
+            url.searchParams.delete('deleteSuccess');
+            window.history.replaceState({}, '', url);
+        }, 3000);
+    }
 
-                    setTimeout(() => {
-                        popup.classList.remove('show');
-                        popup.classList.add('hidden');
+    // Check for updateSuccess
+    const updateSuccessParam = urlParams.get('updateSuccess');
+    if (updateSuccessParam === 'true') {
+        const popup = document.getElementById('updateSuccessPopup');
+        if (popup) {
+            popup.classList.add('show');
+            popup.classList.remove('hidden');
+            setTimeout(() => {
+                popup.classList.remove('show');
+                popup.classList.add('hidden');
+                const url = new URL(window.location);
+                url.searchParams.delete('updateSuccess');
+                window.history.replaceState({}, '', url);
+            }, 3000);
+        }
+    }
+});
 
-                        const url = new URL(window.location);
-                        url.searchParams.delete('createSuccess');
-                        window.history.replaceState({}, '', url);
-                    }, 3000);
-                }
-            }
-
-            if (urlParams.get('deleteSuccess') === 'true') {
-                const popup = document.getElementById('deleteSuccessPopup');
-                popup.classList.add('show');
-                popup.classList.remove('hidden');
-
-                setTimeout(() => {
-                    popup.classList.remove('show');
-                    popup.classList.add('hidden');
-
-                    const url = new URL(window.location);
-                    url.searchParams.delete('deleteSuccess');
-                    window.history.replaceState({}, '', url);
-                }, 3000);
-            }
-        });
     </script>
 </body>
 </html>

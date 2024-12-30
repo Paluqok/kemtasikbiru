@@ -15,9 +15,6 @@
 </head>
 <!-- <body onload="includeSelectedActivitiesInFormData"> -->
 <body>
-    <div id="successPopup" class="alert alert-success hidden" role="alert">
-        Package updated successfully!
-    </div>
     <header>
         <!-- Navbar -->
         <div th:insert="~{fragments/staffnavbar::navbar}"></div>
@@ -156,33 +153,7 @@
             const selectedValues = Array.from(selectedActivities.options).map(option => option.value);
             document.querySelector('input[name="activityIds"]').value = selectedValues.join(',');
         });
-        // Show Success Popup if Update Was Successful
         
-        document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
-    if (packageIdToDelete) {
-        window.location.href = '/updatePackage/' + '?deleteSuccess=true';
-    }
-});
-
-        document.addEventListener('DOMContentLoaded', function () {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('updateSuccess') === 'true') {
-            const popup = document.getElementById('successPopup');
-            popup.classList.add('show');
-            popup.classList.remove('hidden');
-
-            // Remove the popup after 3 seconds
-            setTimeout(() => {
-                popup.classList.remove('show');
-                popup.classList.add('hidden');
-
-                // Remove the query parameter to avoid showing it again on refresh
-                const url = new URL(window.location);
-                url.searchParams.delete('updateSuccess');
-                window.history.replaceState({}, '', url);
-            }, 3000);
-        }
-    });
     </script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
