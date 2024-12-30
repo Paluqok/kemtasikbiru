@@ -172,7 +172,16 @@ public String createBooking(@RequestParam("bookingStartDate") LocalDateTime book
     Customer customer = (Customer) session.getAttribute("cust");
     Long custId = customer.getCustId();
 
-    session.setAttribute("tempBooking", new Booking("Pending", null, custId, packageId, bookingStartDate, bookingEndDate));
+    // Create the booking object using setter methods
+    Booking booking = new Booking();
+    booking.setBookingStatus("Pending");
+    booking.setStaffId(null); // Assuming staffId is null
+    booking.setCustId(custId);
+    booking.setPackageId(packageId);
+    booking.setBookingStartDate(bookingStartDate);
+    booking.setBookingEndDate(bookingEndDate);
+
+    session.setAttribute("tempBooking", booking);
 
     // Redirect to payment page with total price
     String packagePriceSql = "SELECT packageprice FROM package WHERE packageid = ?";
