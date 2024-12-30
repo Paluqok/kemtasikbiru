@@ -21,7 +21,7 @@
     </div>
 
     <style>
-        #createSuccessPopup, #deleteSuccessPopup {
+        #createSuccessPopup, #deleteSuccessPopup, #updateSuccessPopup {
             position: fixed;
             top: 20px;
             right: 20px;
@@ -140,20 +140,6 @@
         }
     }
 
-    // Check for deleteSuccess
-    if (urlParams.get('deleteSuccess') === 'true') {
-        const popup = document.getElementById('deleteSuccessPopup');
-        popup.classList.add('show');
-        popup.classList.remove('hidden');
-        setTimeout(() => {
-            popup.classList.remove('show');
-            popup.classList.add('hidden');
-            const url = new URL(window.location);
-            url.searchParams.delete('deleteSuccess');
-            window.history.replaceState({}, '', url);
-        }, 3000);
-    }
-
     // Check for updateSuccess
     const updateSuccessParam = urlParams.get('updateSuccess');
     if (updateSuccessParam === 'true') {
@@ -169,6 +155,20 @@
                 window.history.replaceState({}, '', url);
             }, 3000);
         }
+    }
+
+    // Check for deleteSuccess
+    if (urlParams.get('deleteSuccess') === 'true') {
+        const popup = document.getElementById('deleteSuccessPopup');
+        popup.classList.add('show');
+        popup.classList.remove('hidden');
+        setTimeout(() => {
+            popup.classList.remove('show');
+            popup.classList.add('hidden');
+            const url = new URL(window.location);
+            url.searchParams.delete('deleteSuccess');
+            window.history.replaceState({}, '', url);
+        }, 3000);
     }
 });
 

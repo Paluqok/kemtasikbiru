@@ -85,7 +85,7 @@ public class StaffController {
             throw new RuntimeException("Failed to insert staff", e);
         }
 
-        return "redirect:/staffLogin"; // Return the created staff object
+        return "redirect:/staffLogin?createSuccess=true"; // Return the created staff object
     }
 
     @GetMapping("/staffLogin")
