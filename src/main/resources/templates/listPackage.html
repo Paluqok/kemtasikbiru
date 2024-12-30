@@ -4,167 +4,155 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Package List</title>
-    <!-- <link th:href="@{/css/staffBase.css}" rel="stylesheet"> -->
-    <!-- <link th:href="@{/css/staffNavbar.css}" rel="stylesheet"> -->
     <link rel="stylesheet" th:href="@{/styles.css}">
-    
-    <!-- Boxiocns CDN Link -->
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
-    
-    
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
 </head>
 <body>
-    <div id="successPopup" class="alert alert-success hidden" role="alert">
+    <!-- Success Popups -->
+    <div id="createSuccessPopup" class="alert alert-success hidden" role="alert">
+        Package created successfully!
+    </div>
+    <div id="deleteSuccessPopup" class="alert alert-success hidden" role="alert">
         Package deleted successfully!
     </div>
+
     <style>
-        #successPopup {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 1000;
-    padding: 15px 20px;
-    border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    transition: opacity 0.5s ease-in-out;
-}
-
-.hidden {
-    display: none;
-    opacity: 0;
-}
-
-.show {
-    display: block;
-    opacity: 1;
-}
-
-    </style>
-<header>
-    <!-- Navbar -->
-    <div th:insert="~{fragments/staffnavbar::navbar}"></div>
-    <!-- <div class="sidebar close">
-        <div class="logo-details">
-            <i class='bx bxl-c-plus-plus'></i>
-            <span class="logo_name">KemTasikBiru</span>
-        </div>
-        <ul class="nav-links">
-            <li>
-                <a href="/homeStaff">
-                    <i class='bx bx-grid-alt'></i>
-                    <span class="link_name">Home</span>
-                </a>
-                <ul class="sub-menu blank">
-                    <li><a class="link_name" href="/homeStaff">Home</a></li>
-                </ul>
-            </li>
-            <li>
-                <a href="/listPackages">
-                    <i class='bx bx-line-chart'></i>
-                    <span class="link_name">Packages</span>
-                </a>
-                <ul class="sub-menu blank">
-                    <li><a class="link_name" href="/listPackages">Packages</a></li>
-                </ul>
-            </li>
-        </ul>
-    </div> -->
-</header>
-<div class="container">
-    <div class="row my-3">
-        <div class="col-12 text-right">
-            <a th:href="@{/createPackage}" class="btn btn-primary">Create Package</a>
-        </div>
-    </div>
-    <div class="row">
-        <div th:each="package : ${packages}" class="col-md-3 my-3">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title" th:text="${package.packageName}">PackageName</h5>
-                    <p class="card-text">
-                        Price: <span th:text="${package.packagePrice}">PackagePrice</span><br>
-                        <div style="max-height: 7vw; overflow: scroll;">
-                            <ul>
-                                <li th:each="activity : ${package.getActivities()}" th:text="${activity.getActivityName()}">
-                            </ul>
-                        </div>
-                    </p>
-                    <!-- <select id="availableActivities" class="form-control list-group" multiple>
-                        <th:block th:each="activity : ${package.getActivities()}">
-                            <option th:value="${activity.getActivityId()}" th:text="${activity.getActivityName()}"></option>
-                        </th:block>
-                    </select> -->
-                </div>
-                <div class="card-footer">
-                    <a th:href="@{'/updatePackage/' + ${package.packageId}}" class="btn btn-info">Update</a>
-                    <a href="javascript:void(0);" class="btn btn-danger" 
-   th:onclick="'showDeleteModal(' + ${package.packageId} + ')'">Delete</a>
-
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteConfirmModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteConfirmModalLabel">Delete Confirmation</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                Are you sure you want to delete this package?
-            </div>
-            <div class="modal-footer">
-                <button type="submit" class="btn btn-danger" id="confirmDeleteBtn">Confirm</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    let packageIdToDelete = null;
-
-function showDeleteModal(packageId) {
-    packageIdToDelete = packageId;
-    $('#deleteConfirmModal').modal('show');
-}
-
-document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
-    if (packageIdToDelete) {
-        window.location.href = '/deletePackage/' + packageIdToDelete + '?deleteSuccess=true';
-    }
-});
-// Show Success Popup if Delete Was Successful
-document.addEventListener('DOMContentLoaded', function () {
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('deleteSuccess') === 'true') {
-            const popup = document.getElementById('successPopup');
-            popup.classList.add('show');
-            popup.classList.remove('hidden');
-
-            // Remove the popup after 3 seconds
-            setTimeout(() => {
-                popup.classList.remove('show');
-                popup.classList.add('hidden');
-
-                // Remove the query parameter to avoid showing it again on refresh
-                const url = new URL(window.location);
-                url.searchParams.delete('deleteSuccess');
-                window.history.replaceState({}, '', url);
-            }, 3000);
+        #createSuccessPopup, #deleteSuccessPopup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: opacity 0.5s ease-in-out;
         }
-    });
-</script>
 
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+        .hidden {
+            display: none;
+            opacity: 0;
+        }
 
+        .show {
+            display: block;
+            opacity: 1;
+        }
+    </style>
+
+    <header>
+        <div th:insert="~{fragments/staffnavbar::navbar}"></div>
+    </header>
+    <div class="container">
+        <!-- Package List and Actions -->
+        <div class="row my-3">
+            <div class="col-12 text-right">
+                <a th:href="@{/createPackage}" class="btn btn-primary">Create Package</a>
+            </div>
+        </div>
+
+        <!-- Packages -->
+        <div class="row">
+            <div th:each="package : ${packages}" class="col-md-3 my-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${package.packageName}">PackageName</h5>
+                        <p class="card-text">
+                            Price: <span th:text="${package.packagePrice}">PackagePrice</span><br>
+                            <div style="max-height: 7vw; overflow: scroll;">
+                                <ul>
+                                    <li th:each="activity : ${package.getActivities()}" th:text="${activity.getActivityName()}"></li>
+                                </ul>
+                            </div>
+                        </p>
+                    </div>
+                    <div class="card-footer">
+                        <a th:href="@{'/updatePackage/' + ${package.packageId}}" class="btn btn-info">Update</a>
+                        <a href="javascript:void(0);" class="btn btn-danger" th:onclick="'showDeleteModal(' + ${package.packageId} + ')'">Delete</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteConfirmModalLabel">Delete Confirmation</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this package?
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger" id="confirmDeleteBtn">Confirm</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <script>
+        let packageIdToDelete = null;
+
+        function showDeleteModal(packageId) {
+            packageIdToDelete = packageId;
+            $('#deleteConfirmModal').modal('show');
+        }
+
+        document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
+            if (packageIdToDelete) {
+                window.location.href = '/deletePackage/' + packageIdToDelete + '?deleteSuccess=true';
+            }
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const successParam = urlParams.get('createSuccess');
+
+            if (successParam === 'true') {
+                const popup = document.getElementById('createSuccessPopup');
+                if (popup) {
+                    popup.classList.add('show');
+                    popup.classList.remove('hidden');
+
+                    setTimeout(() => {
+                        popup.classList.remove('show');
+                        popup.classList.add('hidden');
+
+                        const url = new URL(window.location);
+                        url.searchParams.delete('createSuccess');
+                        window.history.replaceState({}, '', url);
+                    }, 3000);
+                }
+            }
+
+            if (urlParams.get('deleteSuccess') === 'true') {
+                const popup = document.getElementById('deleteSuccessPopup');
+                popup.classList.add('show');
+                popup.classList.remove('hidden');
+
+                setTimeout(() => {
+                    popup.classList.remove('show');
+                    popup.classList.add('hidden');
+
+                    const url = new URL(window.location);
+                    url.searchParams.delete('deleteSuccess');
+                    window.history.replaceState({}, '', url);
+                }, 3000);
+            }
+        });
+    </script>
 </body>
 </html>

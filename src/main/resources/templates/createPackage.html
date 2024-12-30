@@ -48,9 +48,6 @@
 </header>
 <div class="container">
     <!-- Success Popup -->
-    <div id="successPopup" class="alert alert-success hidden" role="alert">
-        Package created successfully!
-    </div>
 
     <div class="row">
         <div class="col-12">
@@ -109,31 +106,6 @@
             available.appendChild(option);
         });
     }
-
-    // Show success popup if redirected with `createSuccess=true`
-    document.addEventListener('DOMContentLoaded', function () {
-        const urlParams = new URLSearchParams(window.location.search);
-        const successParam = urlParams.get('createSuccess');
-
-        if (successParam === 'true') {
-            const popup = document.getElementById('successPopup');
-            if (popup) {
-                popup.classList.add('show');
-                popup.classList.remove('hidden');
-
-                // Hide the popup after 3 seconds
-                setTimeout(() => {
-                    popup.classList.remove('show');
-                    popup.classList.add('hidden');
-
-                    // Clean URL without refreshing the page
-                    const url = new URL(window.location);
-                    url.searchParams.delete('createSuccess');
-                    window.history.replaceState({}, '', url);
-                }, 3000);
-            }
-        }
-    });
 
     // Ensure selected activities are included in form submission
     document.querySelector('form').addEventListener('submit', function () {
