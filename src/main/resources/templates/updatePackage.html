@@ -157,10 +157,13 @@
             document.querySelector('input[name="activityIds"]').value = selectedValues.join(',');
         });
         // Show Success Popup if Update Was Successful
-    document.addEventListener('DOMContentLoaded', function () {
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('updateSuccess') === 'true') {
-            const popup = document.getElementById('successPopup');
+    
+        document.addEventListener('DOMContentLoaded', function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const successParam = urlParams.get('updateSuccess');
+    if (successParam === 'true') {
+        const popup = document.getElementById('successPopup');
+        if (popup) {
             popup.classList.add('show');
             popup.classList.remove('hidden');
 
@@ -171,11 +174,13 @@
 
                 // Remove the query parameter to avoid showing it again on refresh
                 const url = new URL(window.location);
+                url.searchParams.delete('createSuccess');
                 url.searchParams.delete('updateSuccess');
                 window.history.replaceState({}, '', url);
             }, 3000);
         }
-    });
+    }
+});
     </script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
