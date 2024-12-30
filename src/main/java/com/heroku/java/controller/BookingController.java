@@ -165,7 +165,7 @@ public String createBooking(@RequestParam("bookingStartDate") LocalDateTime book
     String packageSql = "SELECT COUNT(activityid) AS activity_count FROM packageactivity WHERE packageid = ?";
     Integer activityCount = jdbcTemplate.queryForObject(packageSql, Integer.class, packageId);
 
-    long bookingDays = java.time.Duration.between(bookingStartDate, bookingEndDate).toDays() + 1;
+    long bookingDays = java.time.Duration.between(bookingStartDate, bookingEndDate).toDays();
 
     if ((activityCount >= 8 && bookingDays != 3) || 
         (activityCount <= 3 && bookingDays != 1) || 
