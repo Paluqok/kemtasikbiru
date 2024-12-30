@@ -18,34 +18,35 @@
     <header>
         <!-- Navbar -->
         <div th:insert="~{fragments/staffnavbar::navbar}"></div>
-        <!-- <div class="sidebar close">
-            <div class="logo-details">
-                <i class='bx bxl-c-plus-plus'></i>
-                <span class="logo_name">KemTasikBiru</span>
-            </div>
-            <ul class="nav-links">
-                <li>
-                    <a href="/homeStaff">
-                        <i class='bx bx-grid-alt'></i>
-                        <span class="link_name">Home</span>
-                    </a>
-                    <ul class="sub-menu blank">
-                        <li><a class="link_name" href="/homeStaff">Home</a></li>
-                    </ul>
-                </li>
-                <li>
-                    <a href="/listPackages">
-                        <i class='bx bx-line-chart'></i>
-                        <span class="link_name">Packages</span>
-                    </a>
-                    <ul class="sub-menu blank">
-                        <li><a class="link_name" href="/listPackages">Packages</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </div> -->
     </header>
+    <style>
+        #successPopup {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    padding: 15px 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: opacity 0.5s ease-in-out;
+}
+
+.hidden {
+    display: none;
+    opacity: 0;
+}
+
+.show {
+    display: block;
+    opacity: 1;
+}
+
+    </style>
     <div class="container">
+        <!-- Success Popup -->
+<div id="successPopup" class="alert alert-success hidden" role="alert">
+    Package updated successfully!
+</div>
         <div class="row my-3">
             <div class="col-12">
                 <h2>Update Package</h2>
@@ -155,6 +156,26 @@
             const selectedValues = Array.from(selectedActivities.options).map(option => option.value);
             document.querySelector('input[name="activityIds"]').value = selectedValues.join(',');
         });
+        // Show Success Popup if Update Was Successful
+    document.addEventListener('DOMContentLoaded', function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('updateSuccess') === 'true') {
+            const popup = document.getElementById('successPopup');
+            popup.classList.add('show');
+            popup.classList.remove('hidden');
+
+            // Remove the popup after 3 seconds
+            setTimeout(() => {
+                popup.classList.remove('show');
+                popup.classList.add('hidden');
+
+                // Remove the query parameter to avoid showing it again on refresh
+                const url = new URL(window.location);
+                url.searchParams.delete('updateSuccess');
+                window.history.replaceState({}, '', url);
+            }, 3000);
+        }
+    });
     </script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>

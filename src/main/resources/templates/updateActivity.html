@@ -27,13 +27,33 @@
         border-radius: 10px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       }
+      #successPopup {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      padding: 15px 20px;
+      border-radius: 5px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transition: opacity 0.5s ease-in-out;
+      }
+
       .hidden {
         display: none;
+        opacity: 0;
+      }
+
+      .show {
+        display: block;
+        opacity: 1;
       }
     </style>
 </head>
 <body>
     <div class="container">
+      <div id="successPopup" class="alert alert-success hidden" role="alert">
+        Activity updated successfully!
+      </div>
       <h1>Update Activity</h1>
       <form id="updateActivityForm" th:action="@{'/updateActivity/' + ${activity.activityId}}" method="post" th:object="${activity}" enctype="multipart/form-data">
         <!-- <input type="hidden" id="action" name="action" value="updateActivity"> -->
@@ -143,10 +163,6 @@
     
     <script>
     function toggleInput(option) {
-
-      
-
-
       document.getElementById('equipmentDiv').classList.add('hidden');
       document.getElementById('locationDiv').classList.add('hidden');
       // document.getElementById('equipment').value = '';
@@ -158,6 +174,31 @@
         document.getElementById('locationDiv').classList.remove('hidden');
       }
     }
+
+    // Show success popup after form submission
+    document.getElementById('updateActivityForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent default form submission for demo purposes
+        
+        // Simulate form submission delay
+        setTimeout(() => {
+            // Hide modal if open
+            $('#confirmModal').modal('hide');
+            
+            // Show success popup
+            const popup = document.getElementById('successPopup');
+            popup.classList.add('show');
+            popup.classList.remove('hidden');
+            
+            // Hide popup after 3 seconds
+            setTimeout(() => {
+                popup.classList.remove('show');
+                popup.classList.add('hidden');
+                
+                // Submit form (remove this line in real application if backend is already handling it)
+                document.getElementById('updateActivityForm').submit();
+            }, 3000);
+        }, 500); // Simulate server processing delay
+    });
 
 
     </script>

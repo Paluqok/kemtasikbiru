@@ -20,6 +20,27 @@
             max-height: 200px;
             overflow-y: auto;
         }
+        #successPopup {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    padding: 15px 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: opacity 0.5s ease-in-out;
+}
+
+.hidden {
+    display: none;
+    opacity: 0;
+}
+
+.show {
+    display: block;
+    opacity: 1;
+}
+
     </style>
 </head>
 <body>
@@ -27,6 +48,9 @@
     <!-- Navbar -->
 </header>
 <div class="container">
+    <div id="successPopup" class="alert alert-success hidden" role="alert">
+        Package created successfully!
+    </div>
     <div class="row">
         <div class="col-12">
             <h1>Create Package</h1>
@@ -85,11 +109,36 @@
         });
     }
 
-    // When form is submitted, make sure selected activities are included in the form data
+    // Show Success Popup if Creation Was Successful
+    document.addEventListener('DOMContentLoaded', function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('createSuccess') === 'true') {
+            const popup = document.getElementById('successPopup');
+            popup.classList.add('show');
+            popup.classList.remove('hidden');
+
+            // Remove the popup after 3 seconds
+            setTimeout(() => {
+                popup.classList.remove('show');
+                popup.classList.add('hidden');
+
+                // Remove the query parameter to avoid showing it again on refresh
+                const url = new URL(window.location);
+                url.searchParams.delete('createSuccess');
+                window.history.replaceState({}, '', url);
+            }, 3000);
+        }
+    });
+
+    // Ensure selected activities are included in form submission
     document.querySelector('form').addEventListener('submit', function() {
         const selectedActivities = document.getElementById('selectedActivities');
         const selectedValues = Array.from(selectedActivities.options).map(option => option.value);
-        document.querySelector('input[name="activityIds"]').value = selectedValues.join(',');
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'activityIds';
+        hiddenInput.value = selectedValues.join(',');
+        this.appendChild(hiddenInput);
     });
 </script>
 </body>

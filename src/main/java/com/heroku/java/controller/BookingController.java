@@ -155,7 +155,7 @@ public class BookingController {
         Staff staff = (Staff) session.getAttribute("staff");
         if (staff == null) {
             return "redirect:/staffLogin";
-        }
+        } 
         List<Booking> bookings = new ArrayList<>();
         try{
             Connection conn = dataSource.getConnection();

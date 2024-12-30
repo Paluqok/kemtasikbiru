@@ -31,6 +31,27 @@
         .btn {
             margin: 5px;
         }
+        #successPopup {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    padding: 15px 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: opacity 0.5s ease-in-out;
+}
+
+.hidden {
+    display: none;
+    opacity: 0;
+}
+
+.show {
+    display: block;
+    opacity: 1;
+}
+
     </style>
     <script>
         function confirmDelete(activityId) {
@@ -122,6 +143,9 @@
     </script>
     <!-- Navbar -->
 </header>
+<div id="successPopup" class="alert alert-success hidden" role="alert">
+    Activity deleted successfully!
+</div>
 <div class="container">
     <div class="row">
         <div class="col-12 text-right">
@@ -150,32 +174,31 @@
                     <!-- <button th:onclick="'deleteActivity(' + ${activity.activityId} + ')'" class="btn btn-danger">Delete</button> -->
                     <a href="javascript:void(0);" class="btn btn-danger" th:onclick="'showDeleteModal(' + ${activity.activityId} + ')'">Delete</a>
 
-                    <!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteConfirmModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteConfirmModalLabel">Delete Confirmation</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                Are you sure you want to delete this activity?
-            </div>
-            <div class="modal-footer">
-                <button type="submit" class="btn btn-danger" id="confirmDeleteBtn">Confirm</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-            </div>
-        </div>
-    </div>
-</div>
-
                 </div>
             </div>
         </div>
     </div>
 </div>
+                    <!-- Delete Confirmation Modal -->
+                    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteConfirmModalLabel">Delete Confirmation</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    Are you sure you want to delete this activity?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-danger" id="confirmDeleteBtn">Confirm</button>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
 <script>
     let activityIdToDelete = null;
@@ -192,6 +215,26 @@ document.getElementById('confirmDeleteBtn').addEventListener('click', function (
         window.location.href = '/deleteActivity/' + activityIdToDelete; // Redirect to delete endpoint
     }
 });
+// Show Success Popup if Delete Was Successful
+document.addEventListener('DOMContentLoaded', function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('deleteSuccess') === 'true') {
+            const popup = document.getElementById('successPopup');
+            popup.classList.add('show');
+            popup.classList.remove('hidden');
+
+            // Remove the popup after 3 seconds
+            setTimeout(() => {
+                popup.classList.remove('show');
+                popup.classList.add('hidden');
+
+                // Remove the query parameter to avoid showing it again on refresh
+                const url = new URL(window.location);
+                url.searchParams.delete('deleteSuccess');
+                window.history.replaceState({}, '', url);
+            }, 3000);
+        }
+    });
 </script>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>

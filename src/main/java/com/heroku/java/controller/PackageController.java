@@ -137,7 +137,7 @@ public class PackageController {
             jdbcTemplate.update(insertPackageActivitySql, packageId, activity.getActivityId());
         }
 
-        return "redirect:/listPackages";
+        return "redirect:/listPackages?createSuccess=true";
     }
 
     @GetMapping("/updatePackage/{packageId}")
@@ -204,7 +204,7 @@ public class PackageController {
             jdbcTemplate.update(insertPackageActivitySql, packageId, activity.getActivityId());
         }
 
-        return "redirect:/listPackages";
+        return "redirect:/listPackages?updateSuccess=true";
     }
 
     @GetMapping("/deletePackage/{packageId}")
@@ -220,6 +220,6 @@ public class PackageController {
         String deletePackageSql = "DELETE FROM package WHERE packageid = ?";
         jdbcTemplate.update(deletePackageSql, packageId);
 
-        return "redirect:/listPackages";
+        return "redirect:/listPackages?deleteSuccess=true";
     }
 }

@@ -406,7 +406,7 @@ public class ActivityController {
         String deleteActivitySql = "DELETE FROM public.activity WHERE activityid = ?";
         jdbcTemplate.update(deleteActivitySql, activityId);
         
-        return "redirect:/listActivity";
+        return "redirect:/listActivity?deleteSuccess=true";
     }
 
     
