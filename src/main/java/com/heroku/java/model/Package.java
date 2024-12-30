@@ -18,6 +18,7 @@ public class Package {
         this.packageName = packageName;
         this.packagePrice = packagePrice;
         this.activities = activities;
+        this.activityCount = activities != null ? activities.size() : 0;
     }
 
     // Getters and setters
@@ -58,7 +59,7 @@ public class Package {
         this.activities = activities;
     }
 
-    public int activityCount() {
+    public int getActivityCount() {
         return activityCount;
     }
 
