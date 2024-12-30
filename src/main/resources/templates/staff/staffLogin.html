@@ -29,7 +29,7 @@
             top: 10px;
             left: 10px;
         }
-        #createSuccessPopup {
+        #createSuccessPopup, #deleteSuccessPopup {
             position: fixed;
             top: 20px;
             right: 20px;
@@ -54,6 +54,9 @@
 <body>
     <div id="createSuccessPopup" class="alert alert-success hidden" role="alert">
         Account created successfully!
+    </div>
+    <div id="deleteSuccessPopup" class="alert alert-success hidden" role="alert">
+        Account deleted successfully!
     </div>
     <div class="container">
         <div class="switch-top-link">
@@ -96,6 +99,18 @@
                 }, 3000);
             }
         }
+        if (urlParams.get('deleteSuccess') === 'true') {
+        const popup = document.getElementById('deleteSuccessPopup');
+        popup.classList.add('show');
+        popup.classList.remove('hidden');
+        setTimeout(() => {
+            popup.classList.remove('show');
+            popup.classList.add('hidden');
+            const url = new URL(window.location);
+            url.searchParams.delete('deleteSuccess');
+            window.history.replaceState({}, '', url);
+        }, 3000);
+    }
         });
     </script>
 </body>

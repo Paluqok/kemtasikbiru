@@ -65,9 +65,6 @@
     <div id="updateSuccessPopup" class="alert alert-success hidden" role="alert">
         Account updates successfully!
     </div>
-    <div id="deleteSuccessPopup" class="alert alert-success hidden" role="alert">
-        Account deleted successfully!
-    </div>
     <header>
         <!-- Navbar -->
         <div th:insert="~{fragments/staffnavbar::navbar}"></div>
@@ -190,8 +187,8 @@
                                 Are you sure you want to delete your account? This action cannot be undone.
                             </div>
                             <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" id="confirmDeleteAccount">Confirm</button>
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                <button type="button" class="btn btn-danger" id="confirmDeleteAccount">Delete</button>
                             </div>
                         </div>
                     </div>
@@ -231,20 +228,6 @@
                 window.history.replaceState({}, '', url);
             }, 3000);
         }
-    }
-
-    // Check for deleteSuccess
-    if (urlParams.get('deleteSuccess') === 'true') {
-        const popup = document.getElementById('deleteSuccessPopup');
-        popup.classList.add('show');
-        popup.classList.remove('hidden');
-        setTimeout(() => {
-            popup.classList.remove('show');
-            popup.classList.add('hidden');
-            const url = new URL(window.location);
-            url.searchParams.delete('deleteSuccess');
-            window.history.replaceState({}, '', url);
-        }, 3000);
     }
 });
         
