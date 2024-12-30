@@ -1,6 +1,7 @@
 package com.heroku.java.controller;
 
 import com.heroku.java.model.Payment;
+import com.heroku.java.model.Booking;
 import com.heroku.java.model.Staff;
 
 import org.springframework.beans.factory.annotation.Autowired;
