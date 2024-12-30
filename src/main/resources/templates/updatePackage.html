@@ -42,11 +42,11 @@
 }
 
     </style>
-    <div class="container">
-        <!-- Success Popup -->
+            <!-- Success Popup -->
 <div id="successPopup" class="alert alert-success hidden" role="alert">
     Package updated successfully!
 </div>
+    <div class="container">
         <div class="row my-3">
             <div class="col-12">
                 <h2>Update Package</h2>
@@ -151,11 +151,7 @@
         }
 
         // When form is submitted, make sure selected activities are included in the form data
-        document.querySelector('form').addEventListener('submit', function() {
-            const selectedActivities = document.getElementById('selectedActivities');
-            const selectedValues = Array.from(selectedActivities.options).map(option => option.value);
-            document.querySelector('input[name="activityIds"]').value = selectedValues.join(',');
-        });
+
         // Show Success Popup if Update Was Successful
     
         document.addEventListener('DOMContentLoaded', function () {
