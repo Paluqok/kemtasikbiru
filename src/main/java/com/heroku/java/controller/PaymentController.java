@@ -49,6 +49,8 @@ public class PaymentController {
         // Fetch the total price from the session or previous request
         Double totalPrice = (Double) session.getAttribute("totalPrice");
         model.addAttribute("totalPrice", totalPrice);
+        logger.info("Payment page accessed. TempBooking: {}", session.getAttribute("tempBooking"));
+        logger.info("TotalPrice: {}", session.getAttribute("totalPrice"));
         return "payment";
     }
 
