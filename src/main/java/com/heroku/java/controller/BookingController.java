@@ -366,5 +366,63 @@ logger.info("sini");
                              .body(Collections.singletonMap("error", "An error occurred while checking package availability"));
     }
 }
+/*@PostMapping("/createBooking")
+public String createBooking(@RequestParam("bookingStartDate") LocalDateTime bookingStartDate,
+                            @RequestParam("bookingEndDate") LocalDateTime bookingEndDate,
+                            @RequestParam("packageId") Long packageId,
+                            HttpSession session, Model model) {
+    
+    // Logging incoming request details
+    logger.info("Booking request received for customer: {} with packageId: {} from {} to {}",
+        session.getAttribute("cust"), packageId, bookingStartDate, bookingEndDate);
+
+    // Check if booking duration exceeds 3 days
+    if (bookingEndDate.isAfter(bookingStartDate.plusDays(3))) {
+        model.addAttribute("dateMessage", "Booking duration cannot exceed 3 days.");
+        return "createBooking";
+    }
+
+    // Retrieve selected package details
+    String packageSql = "SELECT COUNT(activityid) AS activity_count FROM packageactivity WHERE packageid = ?";
+    Integer activityCount = jdbcTemplate.queryForObject(packageSql, Integer.class, packageId);
+
+    long bookingDays = java.time.Duration.between(bookingStartDate, bookingEndDate).toDays();
+
+    if ((activityCount >= 8 && bookingDays != 3) || 
+        (activityCount <= 3 && bookingDays != 1) || 
+        (activityCount >= 4 && activityCount <= 7 && bookingDays != 2)) {
+        model.addAttribute("dateMessage", "Selected package duration does not match booking days.");
+        return "createBooking";
+    }
+
+logger.info("sini");
+    // Temporarily store booking details in session (not saved yet)
+    Customer customer = (Customer) session.getAttribute("cust");
+    Long custId = customer.getCustId();
+
+    // Create the booking object using setter methods
+    Booking booking = new Booking();
+    booking.setBookingStatus("Pending");
+    booking.setStaffId(null); // Assuming staffId is null
+    booking.setCustId(custId);
+    booking.setPackageId(packageId);
+    booking.setBookingStartDate(bookingStartDate);
+    booking.setBookingEndDate(bookingEndDate);
+
+    session.setAttribute("tempBooking", booking);
+
+    // Redirect to payment page with total price
+    String packagePriceSql = "SELECT packageprice FROM package WHERE packageid = ?";
+    Double totalPrice = jdbcTemplate.queryForObject(packagePriceSql, Double.class, packageId);
+    session.setAttribute("totalPrice", totalPrice);
+    logger.info("Booking and price saved in session: tempBooking = " + session.getAttribute("tempBooking"));
+    logger.info("Total price saved in session: totalPrice = " + session.getAttribute("totalPrice"));
+
+
+    // Log successful booking
+    logger.info("Booking successfully created for customer: {} with packageId: {}. Redirecting to payment page.",
+        custId, packageId);
+    return "redirect:/payment";
+}*/
 }
 

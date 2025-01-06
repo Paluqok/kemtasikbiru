@@ -1,80 +1,4 @@
-<!--<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Booking</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <style>
-        .container {
-            max-width: 600px;
-            margin: 40px auto;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-    </style>
-</head>
-<body>
-<div class="container">
-    <h1>Create Booking</h1>
-    <form id="bookingForm" th:action="@{/createBooking}" method="post">
-        <div class="form-group">
-            <label for="bookingStartDate">Booking Start Date:</label>
-            <input type="datetime-local" id="bookingStartDate" name="bookingStartDate" class="form-control" required>
-        </div>
-        <div class="form-group">
-            <label for="bookingEndDate">Booking End Date:</label>
-            <input type="datetime-local" id="bookingEndDate" name="bookingEndDate" class="form-control" required>
-        </div>
-        <button type="button" id="checkButton" class="btn btn-primary">Check Availability</button>
-        <div id="availabilityMessage"></div>
-        <div id="packageSelection" style="display:none;">
-            <h3>Select Package</h3>
-            <div class="form-group">
-                <th:block th:each="pkg : ${packages}">
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="packageId" th:id="${pkg.packageId}" th:value="${pkg.packageId}" required>
-                        <label class="form-check-label" th:for="${pkg.packageId}" th:text="${pkg.packageName} + ' (RM' + ${pkg.packagePrice} + ')'"></label>
-                    </div>
-                </th:block>
-            </div>
-            <button type="submit" class="btn btn-success">Submit</button>
-        </div>
-    </form>
-</div>
-<script>
-    document.getElementById('checkButton').addEventListener('click', function() {
-        const startDate = document.getElementById('bookingStartDate').value;
-        const endDate = document.getElementById('bookingEndDate').value;
-
-        if (new Date(endDate) - new Date(startDate) > 3 * 24 * 60 * 60 * 1000) {
-            document.getElementById('availabilityMessage').innerText = 'Booking not available for more than 3 days';
-            document.getElementById('packageSelection').style.display = 'none';
-        } else {
-            // Simulated AJAX call to check for clashes
-            const clashes = 2; // Placeholder for number of clashes
-            if (clashes >= 5) {
-                document.getElementById('availabilityMessage').innerText = 'Booking is currently full at that date';
-                document.getElementById('packageSelection').style.display = 'none';
-            } else {
-                document.getElementById('availabilityMessage').innerText = 'No clash';
-                document.getElementById('packageSelection').style.display = 'block';
-            }
-        }
-    });
-
-    document.querySelectorAll('.package-radio').forEach(radio => {
-        radio.addEventListener('change', function() {
-            const packagePrice = this.getAttribute('data-price');
-            document.getElementById('totalPrice').value = packagePrice;
-        });
-    });
-</script>
-</body>
-</html>-->
-
+<!--
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -199,3 +123,95 @@ document.getElementById('bookingForm').addEventListener('submit', function (e) {
 </script>
 </body>
 </html>
+-->
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Booking</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Create Booking</h1>
+    <form id="bookingForm" th:action="@{/createBooking}" method="post">
+        <!-- Booking Start Date -->
+        <div class="form-group">
+            <label for="bookingStartDate">Booking Start Date:</label>
+            <input type="datetime-local" id="bookingStartDate" name="bookingStartDate" class="form-control" required>
+        </div>
+        
+        <!-- Booking End Date -->
+        <div class="form-group">
+            <label for="bookingEndDate">Booking End Date:</label>
+            <input type="datetime-local" id="bookingEndDate" name="bookingEndDate" class="form-control" required>
+        </div>
+
+        <!-- Package Selection Section -->
+        <div class="form-group">
+            <label>Select Package</label>
+            <th:block th:each="pkg : ${packages}">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="packageId" th:id="${pkg.packageId}" th:value="${pkg.packageId}" required>
+                    <label class="form-check-label" th:for="${pkg.packageId}" th:text="${pkg.packageName} + ' (RM' + ${pkg.packagePrice} + ')'"></label>
+                </div>
+            </th:block>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-success">Submit</button>
+        
+        <!-- Availability Message -->
+        <div id="availabilityMessage"></div>
+    </form>
+</div>
+
+<script>
+    // Add custom validation for the booking duration before form submission
+    document.getElementById('bookingForm').addEventListener('submit', function (e) {
+        const startDate = document.getElementById('bookingStartDate').value;
+        const endDate = document.getElementById('bookingEndDate').value;
+        const packageId = document.querySelector('input[name="packageId"]:checked');
+
+        if (!packageId) {
+            e.preventDefault();  // Prevent form submission if no package is selected
+            alert('Please select a package.');
+            return;
+        }
+
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const diffDays = (end - start) / (1000 * 60 * 60 * 24);
+
+        // Validate that end date is after start date
+        if (start >= end) {
+            e.preventDefault();
+            alert('End date must be after start date.');
+            return;
+        }
+
+        // Validate booking duration
+        if (diffDays > 3) {
+            e.preventDefault();
+            alert('Booking duration cannot exceed 3 days.');
+            return;
+        }
+
+        // The form will now be submitted to the backend for further validation (including package duration check)
+    });
+</script>
+</body>
+</html>
+
