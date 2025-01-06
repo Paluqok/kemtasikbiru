@@ -142,7 +142,7 @@
             return;
         }
 
-        /*fetch(`/checkPackages?startDate=${startDate}&endDate=${endDate}`)
+        fetch(`/checkPackages?startDate=${startDate}&endDate=${endDate}`)
             .then(response => response.json())
             .then(data => {
                 const packages = data.packages;
@@ -180,27 +180,11 @@
                 console.error('Error fetching packages:', error);
                 document.getElementById('availabilityMessage').innerText = 'Error fetching package availability.';
                 document.getElementById('packageSelection').style.display = 'none';
-            });*/
-            fetch(`/checkPackages?startDate=${startDate}&endDate=${endDate}`)
-            .then(response => response.json())
-            .then(data => {
-                const packages = data.packages;
-                const packageContainer = document.querySelector('#packageSelection .form-group');
-                packageContainer.innerHTML = '';
-                if (packages.length === 0) {
-                    document.getElementById('availabilityMessage').innerText = 'No packages available.';
-                    document.getElementById('packageSelection').style.display = 'none';
-                } else {
-                    packages.forEach(pkg => {
-                        packageContainer.innerHTML += `
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="packageId" id="${pkg.packageId}" value="${pkg.packageId}" required>
-                                <label class="form-check-label" for="${pkg.packageId}">${pkg.packageName} (RM${pkg.packagePrice})</label>
-                            </div>`;
-                    });
-                    document.getElementById('packageSelection').style.display = 'block';
-                }
             });
+    });
+
+    document.getElementById('bookingForm').addEventListener('submit', function (e) {
+        console.log('Form is submitting...');
     });
 </script>
 </body>
