@@ -200,6 +200,9 @@ public String createBooking(@RequestParam("bookingStartDate") LocalDateTime book
     String packagePriceSql = "SELECT packageprice FROM package WHERE packageid = ?";
     Double totalPrice = jdbcTemplate.queryForObject(packagePriceSql, Double.class, packageId);
     session.setAttribute("totalPrice", totalPrice);
+    logger.info("Booking and price saved in session: tempBooking = " + session.getAttribute("tempBooking"));
+    logger.info("Total price saved in session: totalPrice = " + session.getAttribute("totalPrice"));
+
 
     // Log successful booking
     logger.info("Booking successfully created for customer: {} with packageId: {}. Redirecting to payment page.",
