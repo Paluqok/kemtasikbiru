@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Collections;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -149,11 +151,16 @@ public String showCreateBookingForm(HttpSession session, Model model) {
     return "createBooking";
 }
 
+    private static final Logger logger = LoggerFactory.getLogger(BookingController.class);
 @PostMapping("/createBooking")
 public String createBooking(@RequestParam("bookingStartDate") LocalDateTime bookingStartDate,
                             @RequestParam("bookingEndDate") LocalDateTime bookingEndDate,
                             @RequestParam("packageId") Long packageId,
                             HttpSession session, Model model) {
+    
+    // Logging incoming request details
+    logger.info("Booking request received for customer: {} with packageId: {} from {} to {}",
+        session.getAttribute("cust"), packageId, bookingStartDate, bookingEndDate);
 
     // Check if booking duration exceeds 3 days
     if (bookingEndDate.isAfter(bookingStartDate.plusDays(3))) {
@@ -194,6 +201,9 @@ public String createBooking(@RequestParam("bookingStartDate") LocalDateTime book
     Double totalPrice = jdbcTemplate.queryForObject(packagePriceSql, Double.class, packageId);
     session.setAttribute("totalPrice", totalPrice);
 
+    // Log successful booking
+    logger.info("Booking successfully created for customer: {} with packageId: {}. Redirecting to payment page.",
+        custId, packageId);
     return "redirect:/payment";
 }
 
