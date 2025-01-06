@@ -181,6 +181,7 @@ public String createBooking(@RequestParam("bookingStartDate") LocalDateTime book
         return "createBooking";
     }
 
+logger.info("sini");
     // Temporarily store booking details in session (not saved yet)
     Customer customer = (Customer) session.getAttribute("cust");
     Long custId = customer.getCustId();
