@@ -77,7 +77,7 @@ public class BookingController {
         return "createBooking";
     }
    
-
+private static final Logger logger = LoggerFactory.getLogger(BookingController.class);
     @PostMapping("/createBooking")
 public String createBooking(@RequestParam("bookingStartDate") LocalDateTime bookingStartDate,
                             @RequestParam("bookingEndDate") LocalDateTime bookingEndDate,
