@@ -77,8 +77,101 @@ public class BookingController {
         return "createBooking";
     }
    
-private static final Logger logger = LoggerFactory.getLogger(BookingController.class);
+    private static final Logger logger = LoggerFactory.getLogger(BookingController.class);
     @PostMapping("/createBooking")
+public String createBooking(
+    @RequestParam("bookingStartDate") LocalDateTime bookingStartDate,
+    @RequestParam("bookingEndDate") LocalDateTime bookingEndDate,
+    @RequestParam("packageId") Long packageId,
+    @RequestParam("action") String action, // "check" or "submit"
+    HttpSession session, 
+    Model model) {
+
+    logger.info("Booking request received for action: {}", action);
+
+    // Validate date range
+    if (bookingEndDate.isAfter(bookingStartDate.plusDays(3))) {
+        model.addAttribute("dateMessage", "Booking duration cannot exceed 3 days.");
+        return "createBooking";
+    }
+
+    long bookingDays = java.time.Duration.between(bookingStartDate, bookingEndDate).toDays();
+
+    // Fetch package details
+    String packageSql = "SELECT COUNT(activityid) AS activity_count FROM packageactivity WHERE packageid = ?";
+    Integer activityCount = jdbcTemplate.queryForObject(packageSql, Integer.class, packageId);
+
+    if ((activityCount >= 8 && bookingDays != 3) || 
+        (activityCount <= 3 && bookingDays != 1) || 
+        (activityCount >= 4 && activityCount <= 7 && bookingDays != 2)) {
+        model.addAttribute("dateMessage", "Selected package duration does not match booking days.");
+        return "createBooking";
+    }
+
+    if ("check".equals(action)) {
+        // Action: Check available packages
+        String sql = "SELECT p.*, COUNT(pa.activityid) AS activity_count FROM package p " +
+                     "LEFT JOIN packageactivity pa ON p.packageid = pa.packageid " +
+                     "GROUP BY p.packageid";
+        List<Package> packages = jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Package pkg = new Package();
+            pkg.setPackageId(rs.getLong("packageid"));
+            pkg.setPackageName(rs.getString("packagename"));
+            pkg.setPackagePrice(rs.getDouble("packageprice"));
+            pkg.setActivityCount(rs.getInt("activity_count"));
+            return pkg;
+        });
+
+        // Filter packages
+        packages = packages.stream()
+            .filter(pkg -> {
+                int activityCountPkg = pkg.getActivityCount();
+                if ((activityCountPkg >= 8 && bookingDays == 3) || 
+                    (activityCountPkg <= 3 && bookingDays == 1) || 
+                    (activityCountPkg >= 4 && activityCountPkg <= 7 && bookingDays == 2)) {
+                    return true;
+                }
+                return false;
+            })
+            .collect(Collectors.toList());
+
+        model.addAttribute("availablePackages", packages);
+        return "createBooking"; // Stay on the same page, showing available packages
+    } 
+
+    if ("submit".equals(action)) {
+        // Action: Submit booking
+        Customer customer = (Customer) session.getAttribute("cust");
+        Long custId = customer.getCustId();
+
+        Booking booking = new Booking();
+        booking.setBookingStatus("Pending");
+        booking.setStaffId(null); // Assuming staffId is null
+        booking.setCustId(custId);
+        booking.setPackageId(packageId);
+        booking.setBookingStartDate(bookingStartDate);
+        booking.setBookingEndDate(bookingEndDate);
+
+        session.setAttribute("tempBooking", booking);
+
+        // Fetch package price and store in session
+        String packagePriceSql = "SELECT packageprice FROM package WHERE packageid = ?";
+        Double totalPrice = jdbcTemplate.queryForObject(packagePriceSql, Double.class, packageId);
+        session.setAttribute("totalPrice", totalPrice);
+
+        logger.info("Booking and price saved in session: tempBooking = {}", booking);
+        logger.info("Total price saved in session: totalPrice = {}", totalPrice);
+
+        return "redirect:/payment";
+    }
+
+    // Default fallback
+    model.addAttribute("dateMessage", "Invalid action specified.");
+    return "createBooking";
+}
+
+
+    /*@PostMapping("/createBooking")
 public String createBooking(@RequestParam("bookingStartDate") LocalDateTime bookingStartDate,
                             @RequestParam("bookingEndDate") LocalDateTime bookingEndDate,
                             @RequestParam("packageId") Long packageId,
@@ -135,7 +228,7 @@ logger.info("sini");
     logger.info("Booking successfully created for customer: {} with packageId: {}. Redirecting to payment page.",
         custId, packageId);
     return "redirect:/payment";
-}
+}*/
 
    /*@GetMapping("/createBooking")
 public String showCreateBookingForm(HttpSession session, Model model) {
