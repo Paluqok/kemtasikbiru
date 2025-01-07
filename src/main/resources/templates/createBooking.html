@@ -293,52 +293,58 @@ document.getElementById('bookingForm').addEventListener('submit', function (e) {
 
     // Fetch available packages based on the selected dates
     fetch(`/createBooking?bookingStartDate=${startDate}&bookingEndDate=${endDate}&action=check`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+})
+    .then(response => {
+        console.log('Response Status:', response.status); // Log the status code
+        return response.json(); // Parse JSON response
+    })
+    .then(data => {
+        console.log('Received data:', data); // Log the full response
+        const packages = data.packages;
+
+        if (packages.length === 0) {
+            document.getElementById('availabilityMessage').innerText = 'No packages available for the selected dates.';
+            document.getElementById('packageSelection').style.display = 'none';
+        } else {
+            document.getElementById('availabilityMessage').innerText = 'Available packages:';
+            const packageContainer = document.querySelector('#packageSelection .form-group');
+            packageContainer.innerHTML = '';  // Clear previous options
+
+            packages.forEach(pkg => {
+                const div = document.createElement('div');
+                div.classList.add('form-check');
+
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.classList.add('form-check-input');
+                input.name = 'packageId';
+                input.id = pkg.packageId;
+                input.value = pkg.packageId;
+
+                const label = document.createElement('label');
+                label.classList.add('form-check-label');
+                label.htmlFor = pkg.packageId;
+                label.innerText = `${pkg.packageName} (RM${pkg.packagePrice})`;
+
+                div.appendChild(input);
+                div.appendChild(label);
+                packageContainer.appendChild(div);
+            });
+
+            // Show the package selection section
+            document.getElementById('packageSelection').style.display = 'block';
         }
     })
-        .then(response => response.json())
-        .then(data => {
-            const packages = data.packages;
-            if (packages.length === 0) {
-                document.getElementById('availabilityMessage').innerText = 'No packages available for the selected dates.';
-                document.getElementById('packageSelection').style.display = 'none';
-            } else {
-                document.getElementById('availabilityMessage').innerText = 'Available packages:';
-                const packageContainer = document.querySelector('#packageSelection .form-group');
-                packageContainer.innerHTML = '';  // Clear previous options
+    .catch(error => {
+        console.error('Error fetching packages:', error);
+        document.getElementById('availabilityMessage').innerText = 'Error fetching package availability.';
+        document.getElementById('packageSelection').style.display = 'none';
+    });
 
-                packages.forEach(pkg => {
-                    const div = document.createElement('div');
-                    div.classList.add('form-check');
-
-                    const input = document.createElement('input');
-                    input.type = 'radio';
-                    input.classList.add('form-check-input');
-                    input.name = 'packageId';
-                    input.id = pkg.packageId;
-                    input.value = pkg.packageId;
-
-                    const label = document.createElement('label');
-                    label.classList.add('form-check-label');
-                    label.htmlFor = pkg.packageId;
-                    label.innerText = `${pkg.packageName} (RM${pkg.packagePrice})`;
-
-                    div.appendChild(input);
-                    div.appendChild(label);
-                    packageContainer.appendChild(div);
-                });
-
-                // Show the package selection section
-                document.getElementById('packageSelection').style.display = 'block';
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching packages:', error);
-            document.getElementById('availabilityMessage').innerText = 'Error fetching package availability.';
-            document.getElementById('packageSelection').style.display = 'none';
-        });
 });
 
 
