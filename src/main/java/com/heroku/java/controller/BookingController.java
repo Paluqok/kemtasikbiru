@@ -58,7 +58,7 @@ public class BookingController {
         }
     };
 
-    /*@GetMapping("/createBooking")
+    @GetMapping("/createBooking")
     public String showCreateBookingForm(HttpSession session, Model model) {
         Customer customer = (Customer) session.getAttribute("cust");
         if (customer == null) {
@@ -125,9 +125,9 @@ public class BookingController {
         session.setAttribute("bookingId", bookingId);
 
         return "redirect:/payment";
-    }*/
+    }
 
-   @GetMapping("/createBooking")
+   /*@GetMapping("/createBooking")
 public String showCreateBookingForm(HttpSession session, Model model) {
     Customer customer = (Customer) session.getAttribute("cust");
     if (customer == null) {
@@ -209,7 +209,7 @@ logger.info("sini");
     logger.info("Booking successfully created for customer: {} with packageId: {}. Redirecting to payment page.",
         custId, packageId);
     return "redirect:/payment";
-}
+}*/
 
     @GetMapping("/custViewBooking")
     public String customerViewBooking(HttpSession session, Model model) {
