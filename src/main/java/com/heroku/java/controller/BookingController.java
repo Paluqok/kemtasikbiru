@@ -79,53 +79,63 @@ public class BookingController {
    
 
     @PostMapping("/createBooking")
-    public String createBooking(@RequestParam("bookingStartDate") LocalDateTime bookingStartDate,
-                                @RequestParam("bookingEndDate") LocalDateTime bookingEndDate,
-                                @RequestParam("packageId") Long packageId,
-                                HttpSession session, Model model) {
-        // Check for date clash
-        String clashCheckSql = "SELECT COUNT(*) FROM booking WHERE " +
-                "((bookingstartdate <= ? AND bookingenddate >= ?) OR " +
-                "(bookingstartdate <= ? AND bookingenddate >= ?) OR " +
-                "(bookingstartdate >= ? AND bookingenddate <= ?))";
-        int clashCount = jdbcTemplate.queryForObject(clashCheckSql, Integer.class, 
-                bookingStartDate, bookingStartDate, 
-                bookingEndDate, bookingEndDate, 
-                bookingStartDate, bookingEndDate);
-        if (clashCount >= 5) {
-            model.addAttribute("dateMessage", "Booking is currently full at that date.");
-            return "createBooking";
-        }
+public String createBooking(@RequestParam("bookingStartDate") LocalDateTime bookingStartDate,
+                            @RequestParam("bookingEndDate") LocalDateTime bookingEndDate,
+                            @RequestParam("packageId") Long packageId,
+                            HttpSession session, Model model) {
+    
+    // Logging incoming request details
+    logger.info("Booking request received for customer: {} with packageId: {} from {} to {}",
+        session.getAttribute("cust"), packageId, bookingStartDate, bookingEndDate);
 
-        // Check if booking duration is more than 3 days
-        if (bookingEndDate.isAfter(bookingStartDate.plusDays(3))) {
-            model.addAttribute("dateMessage", "Not available for more than 3 days.");
-            return "createBooking";
-        }
-
-        // Get the customer ID from session
-        Customer customer = (Customer) session.getAttribute("cust");
-        Long custId = customer.getCustId();
-
-        // Insert booking into database
-        String insertSql = "INSERT INTO booking (bookingstatus, staffid, custid, packageid, bookingstartdate, bookingenddate) VALUES (?, ?, ?, ?, ?, ?)";
-        jdbcTemplate.update(insertSql, "Pending", null, custId, packageId, bookingStartDate, bookingEndDate);
-        // jdbcTemplate.execute(insertSql);
-
-        // Redirect to payment page with total price
-        String packageSql = "SELECT packageprice FROM package WHERE packageid = ?";
-        Double totalPrice = jdbcTemplate.queryForObject(packageSql, Double.class, packageId);
-        session.setAttribute("totalPrice", totalPrice);
-        model.addAttribute("totalPrice", totalPrice);
-
-        // Get bookingId to set it as an attribute of the session
-        // String sql = "SELECT bookingId FROM booking WHERE bookingStatus = ? AND custid = ? AND packageid = ? AND bookingstartdate = ? AND bookingenddate = ?";
-        String sql = "SELECT bookingId FROM booking ORDER BY bookingId DESC LIMIT 1;";
-        Long bookingId = jdbcTemplate.queryForObject(sql, Long.class);
-        session.setAttribute("bookingId", bookingId);
-
-        return "redirect:/payment";
+    // Check if booking duration exceeds 3 days
+    if (bookingEndDate.isAfter(bookingStartDate.plusDays(3))) {
+        model.addAttribute("dateMessage", "Booking duration cannot exceed 3 days.");
+        return "createBooking";
     }
+
+    // Retrieve selected package details
+    String packageSql = "SELECT COUNT(activityid) AS activity_count FROM packageactivity WHERE packageid = ?";
+    Integer activityCount = jdbcTemplate.queryForObject(packageSql, Integer.class, packageId);
+
+    long bookingDays = java.time.Duration.between(bookingStartDate, bookingEndDate).toDays();
+
+    if ((activityCount >= 8 && bookingDays != 3) || 
+        (activityCount <= 3 && bookingDays != 1) || 
+        (activityCount >= 4 && activityCount <= 7 && bookingDays != 2)) {
+        model.addAttribute("dateMessage", "Selected package duration does not match booking days.");
+        return "createBooking";
+    }
+
+logger.info("sini");
+    // Temporarily store booking details in session (not saved yet)
+    Customer customer = (Customer) session.getAttribute("cust");
+    Long custId = customer.getCustId();
+
+    // Create the booking object using setter methods
+    Booking booking = new Booking();
+    booking.setBookingStatus("Pending");
+    booking.setStaffId(null); // Assuming staffId is null
+    booking.setCustId(custId);
+    booking.setPackageId(packageId);
+    booking.setBookingStartDate(bookingStartDate);
+    booking.setBookingEndDate(bookingEndDate);
+
+    session.setAttribute("tempBooking", booking);
+
+    // Redirect to payment page with total price
+    String packagePriceSql = "SELECT packageprice FROM package WHERE packageid = ?";
+    Double totalPrice = jdbcTemplate.queryForObject(packagePriceSql, Double.class, packageId);
+    session.setAttribute("totalPrice", totalPrice);
+    logger.info("Booking and price saved in session: tempBooking = " + session.getAttribute("tempBooking"));
+    logger.info("Total price saved in session: totalPrice = " + session.getAttribute("totalPrice"));
+
+
+    // Log successful booking
+    logger.info("Booking successfully created for customer: {} with packageId: {}. Redirecting to payment page.",
+        custId, packageId);
+    return "redirect:/payment";
+}
 
    /*@GetMapping("/createBooking")
 public String showCreateBookingForm(HttpSession session, Model model) {
@@ -366,7 +376,7 @@ logger.info("sini");
                              .body(Collections.singletonMap("error", "An error occurred while checking package availability"));
     }
 }
-/*@PostMapping("/createBooking")
+@PostMapping("/createBooking")
 public String createBooking(@RequestParam("bookingStartDate") LocalDateTime bookingStartDate,
                             @RequestParam("bookingEndDate") LocalDateTime bookingEndDate,
                             @RequestParam("packageId") Long packageId,
@@ -423,6 +433,6 @@ logger.info("sini");
     logger.info("Booking successfully created for customer: {} with packageId: {}. Redirecting to payment page.",
         custId, packageId);
     return "redirect:/payment";
-}*/
+}
 }
 
