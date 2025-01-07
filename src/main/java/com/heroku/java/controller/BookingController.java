@@ -88,13 +88,13 @@ public String createBooking(@RequestParam("bookingStartDate") LocalDateTime book
     // Action to check available packages
     if ("check".equals(action)) {
         long bookingDays = java.time.Duration.between(bookingStartDate, bookingEndDate).toDays();
-        
+
         // Ensure booking duration is within limits
         if (bookingDays > 3) {
             model.addAttribute("availabilityMessage", "Booking not available for more than 3 days.");
             return "createBooking";
         }
-        
+
         // Fetch packages based on available dates
         String sql = "SELECT p.*, COUNT(pa.activityid) AS activity_count FROM package p " +
                      "LEFT JOIN packageactivity pa ON p.packageid = pa.packageid " +
@@ -118,7 +118,10 @@ public String createBooking(@RequestParam("bookingStartDate") LocalDateTime book
             })
             .collect(Collectors.toList());
 
-        // Add filtered packages to the model for rendering
+        // Log packages to verify the data
+        System.out.println("Available packages: " + packages);
+
+        // Return packages in JSON format (you may need to adjust this based on your framework)
         model.addAttribute("packages", packages);
         return "createBooking";  // Show package selection
     }
