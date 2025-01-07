@@ -79,6 +79,85 @@ public class BookingController {
    
     private static final Logger logger = LoggerFactory.getLogger(BookingController.class);
     @PostMapping("/createBooking")
+public String createBooking(@RequestParam("bookingStartDate") LocalDateTime bookingStartDate,
+                            @RequestParam("bookingEndDate") LocalDateTime bookingEndDate,
+                            @RequestParam(value = "packageId", required = false) Long packageId,
+                            @RequestParam(value = "action", required = false) String action, // Added action to distinguish requests
+                            HttpSession session, Model model) {
+    
+    // Action to check available packages
+    if ("check".equals(action)) {
+        long bookingDays = java.time.Duration.between(bookingStartDate, bookingEndDate).toDays();
+        
+        // Ensure booking duration is within limits
+        if (bookingDays > 3) {
+            model.addAttribute("availabilityMessage", "Booking not available for more than 3 days.");
+            return "createBooking";
+        }
+        
+        // Fetch packages based on available dates
+        String sql = "SELECT p.*, COUNT(pa.activityid) AS activity_count FROM package p " +
+                     "LEFT JOIN packageactivity pa ON p.packageid = pa.packageid " +
+                     "GROUP BY p.packageid";
+        List<Package> packages = jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Package pkg = new Package();
+            pkg.setPackageId(rs.getLong("packageid"));
+            pkg.setPackageName(rs.getString("packagename"));
+            pkg.setPackagePrice(rs.getDouble("packageprice"));
+            pkg.setActivityCount(rs.getInt("activity_count"));
+            return pkg;
+        });
+
+        // Filter packages based on activity count and booking days
+        packages = packages.stream()
+            .filter(pkg -> {
+                int activityCount = pkg.getActivityCount();
+                return (activityCount >= 8 && bookingDays == 3) || 
+                       (activityCount <= 3 && bookingDays == 1) || 
+                       (activityCount >= 4 && activityCount <= 7 && bookingDays == 2);
+            })
+            .collect(Collectors.toList());
+
+        // Add filtered packages to the model for rendering
+        model.addAttribute("packages", packages);
+        return "createBooking";  // Show package selection
+    }
+
+    // Action for submitting booking (with package selection)
+    if ("submit".equals(action)) {
+        if (packageId == null) {
+            model.addAttribute("error", "You must select a package.");
+            return "createBooking";  // Return to the booking page if package isn't selected
+        }
+
+        // Process the booking submission
+        Customer customer = (Customer) session.getAttribute("cust");
+        Long custId = customer.getCustId();
+
+        Booking booking = new Booking();
+        booking.setBookingStatus("Pending");
+        booking.setCustId(custId);
+        booking.setPackageId(packageId);
+        booking.setBookingStartDate(bookingStartDate);
+        booking.setBookingEndDate(bookingEndDate);
+
+        session.setAttribute("tempBooking", booking);
+
+        // Calculate the total price for the package selected
+        String packagePriceSql = "SELECT packageprice FROM package WHERE packageid = ?";
+        Double totalPrice = jdbcTemplate.queryForObject(packagePriceSql, Double.class, packageId);
+        session.setAttribute("totalPrice", totalPrice);
+
+        // Redirect to the payment page
+        return "redirect:/payment";
+    }
+
+    return "createBooking";  // Default action, if not check or submit
+}
+
+
+
+    /*@PostMapping("/createBooking")
 public String createBooking(
     @RequestParam("bookingStartDate") LocalDateTime bookingStartDate,
     @RequestParam("bookingEndDate") LocalDateTime bookingEndDate,
@@ -168,7 +247,7 @@ public String createBooking(
     // Default fallback
     model.addAttribute("dateMessage", "Invalid action specified.");
     return "createBooking";
-}
+}*/
 
 
     /*@PostMapping("/createBooking")
