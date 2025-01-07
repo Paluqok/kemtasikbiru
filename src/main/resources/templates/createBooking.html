@@ -145,19 +145,17 @@ document.getElementById('bookingForm').addEventListener('submit', function (e) {
 <div class="container">
     <h1>Create Booking</h1>
     <form id="bookingForm" th:action="@{/createBooking}" method="post">
-        <!-- Booking Start Date -->
+
         <div class="form-group">
             <label for="bookingStartDate">Booking Start Date:</label>
             <input type="datetime-local" id="bookingStartDate" name="bookingStartDate" class="form-control" required>
         </div>
         
-        <!-- Booking End Date -->
         <div class="form-group">
             <label for="bookingEndDate">Booking End Date:</label>
             <input type="datetime-local" id="bookingEndDate" name="bookingEndDate" class="form-control" required>
         </div>
 
-        <!-- Package Selection Section -->
         <div class="form-group">
             <label>Select Package</label>
             <th:block th:each="pkg : ${packages}">
@@ -168,10 +166,8 @@ document.getElementById('bookingForm').addEventListener('submit', function (e) {
             </th:block>
         </div>
 
-        <!-- Submit Button -->
         <button type="submit" class="btn btn-success">Submit</button>
         
-        <!-- Availability Message -->
         <div id="availabilityMessage"></div>
     </form>
 </div>
