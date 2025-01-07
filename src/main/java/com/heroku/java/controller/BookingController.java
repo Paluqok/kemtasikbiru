@@ -32,7 +32,7 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-@Controller
+@RestController
 public class BookingController {
 
     @Autowired
