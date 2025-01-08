@@ -94,7 +94,7 @@
         <div th:each="activity : ${activities}" class="col-md-3">
             <div class="card">
                 <!--<img th:src="@{'/images/' + ${activity.getActivityImagePath()}}" alt="Activity Image" />-->
-                <img th:src="@{'data:image/jpeg;base64,' + ${product.productImage}}" alt="Product Image" width="100" height="100"/>
+                <img th:src="@{'data:image/jpeg;base64,' + ${activity.getActivityImage}}" alt="Activity Image" width="100" height="100"/>
                 <div class="card-body">
                     <h5 class="card-title" th:text="${activity.activityName}">ActivityName</h5>
                     <p class="card-text">
