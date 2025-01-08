@@ -79,7 +79,69 @@ public class BookingController {
     }
    
     private static final Logger logger = LoggerFactory.getLogger(BookingController.class);
-    @PostMapping("/createBooking")
+    @PostMapping("/createBooking/check")
+@ResponseBody
+public ResponseEntity<?> checkBooking(@RequestParam("bookingStartDate") LocalDateTime bookingStartDate,
+                                      @RequestParam("bookingEndDate") LocalDateTime bookingEndDate) {
+    long bookingDays = java.time.Duration.between(bookingStartDate, bookingEndDate).toDays();
+
+    if (bookingDays > 3) {
+        return ResponseEntity.badRequest().body(Map.of("message", "Booking not available for more than 3 days."));
+    }
+
+    String sql = "SELECT p.*, COUNT(pa.activityid) AS activity_count FROM package p " +
+                 "LEFT JOIN packageactivity pa ON p.packageid = pa.packageid " +
+                 "GROUP BY p.packageid";
+    List<Package> packages = jdbcTemplate.query(sql, (rs, rowNum) -> {
+        Package pkg = new Package();
+        pkg.setPackageId(rs.getLong("packageid"));
+        pkg.setPackageName(rs.getString("packagename"));
+        pkg.setPackagePrice(rs.getDouble("packageprice"));
+        pkg.setActivityCount(rs.getInt("activity_count"));
+        return pkg;
+    });
+
+    packages = packages.stream()
+        .filter(pkg -> {
+            int activityCount = pkg.getActivityCount();
+            return (activityCount >= 8 && bookingDays == 3) || 
+                   (activityCount <= 3 && bookingDays == 1) || 
+                   (activityCount >= 4 && activityCount <= 7 && bookingDays == 2);
+        })
+        .collect(Collectors.toList());
+
+    return ResponseEntity.ok(Map.of("packages", packages));
+}
+
+@PostMapping("/createBooking/submit")
+public String submitBooking(@RequestParam("bookingStartDate") LocalDateTime bookingStartDate,
+                            @RequestParam("bookingEndDate") LocalDateTime bookingEndDate,
+                            @RequestParam("packageId") Long packageId,
+                            HttpSession session) {
+    if (packageId == null) {
+        throw new IllegalArgumentException("You must select a package.");
+    }
+
+    Customer customer = (Customer) session.getAttribute("cust");
+    Long custId = customer.getCustId();
+
+    Booking booking = new Booking();
+    booking.setBookingStatus("Pending");
+    booking.setCustId(custId);
+    booking.setPackageId(packageId);
+    booking.setBookingStartDate(bookingStartDate);
+    booking.setBookingEndDate(bookingEndDate);
+
+    session.setAttribute("tempBooking", booking);
+
+    String packagePriceSql = "SELECT packageprice FROM package WHERE packageid = ?";
+    Double totalPrice = jdbcTemplate.queryForObject(packagePriceSql, Double.class, packageId);
+    session.setAttribute("totalPrice", totalPrice);
+
+    return "redirect:/payment";
+}
+
+    /*@PostMapping("/createBooking")
 @ResponseBody  // Ensure JSON response for fetch calls
 public ResponseEntity<?> createBooking(@RequestParam("bookingStartDate") LocalDateTime bookingStartDate,
                                        @RequestParam("bookingEndDate") LocalDateTime bookingEndDate,
@@ -142,7 +204,7 @@ public ResponseEntity<?> createBooking(@RequestParam("bookingStartDate") LocalDa
     }
 
     return ResponseEntity.badRequest().body(Map.of("error", "Invalid action."));
-}
+}*/
     /*@PostMapping("/createBooking")
 public String createBooking(@RequestParam("bookingStartDate") LocalDateTime bookingStartDate,
                             @RequestParam("bookingEndDate") LocalDateTime bookingEndDate,
