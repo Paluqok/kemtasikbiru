@@ -144,28 +144,6 @@ document.getElementById('bookingForm').addEventListener('submit', function (e) {
 <body>
 <div class="container">
     <h1>Create Booking</h1>
-    <!--<form id="bookingForm" th:action="@{/createBooking}" method="post">
-        <input type="hidden" id="action" name="action" value="check">
-
-        <div class="form-group">
-            <label for="bookingStartDate">Booking Start Date:</label>
-            <input type="datetime-local" id="bookingStartDate" name="bookingStartDate" class="form-control" required>
-        </div>
-        <div class="form-group">
-            <label for="bookingEndDate">Booking End Date:</label>
-            <input type="datetime-local" id="bookingEndDate" name="bookingEndDate" class="form-control" required>
-        </div>
-        
-        <button type="button" id="checkButton" class="btn btn-primary">Check Package</button>
-        
-        <div id="availabilityMessage" class="mt-3"></div>
-        
-        <div id="packageSelection" style="display:none;" class="mt-3">
-            <h3>Select Package</h3>
-            <div class="form-group" id="packageContainer"></div>
-            <button type="submit" class="btn btn-success">Submit</button>
-        </div>
-    </form>-->
     <form id="bookingForm" th:action="@{/createBooking}" method="post">
         <div class="form-group">
             <label for="bookingStartDate">Booking Start Date:</label>
@@ -194,83 +172,6 @@ document.getElementById('bookingForm').addEventListener('submit', function (e) {
 </div>
 
 <script>
-    // Check available packages
-    /*document.getElementById('checkButton').addEventListener('click', function () {
-        const startDate = document.getElementById('bookingStartDate').value;
-        const endDate = document.getElementById('bookingEndDate').value;
-        const actionInput = document.getElementById('action');
-
-        if (!startDate || !endDate) {
-            document.getElementById('availabilityMessage').innerText = 'Please select both start and end dates.';
-            return;
-        }
-
-        const start = new Date(startDate);
-        const end = new Date(endDate);
-        const diffDays = (end - start) / (1000 * 60 * 60 * 24);
-
-        if (start >= end) {
-            document.getElementById('availabilityMessage').innerText = 'End date must be after start date.';
-            document.getElementById('packageSelection').style.display = 'none';
-            return;
-        }
-
-        if (diffDays > 3) {
-            document.getElementById('availabilityMessage').innerText = 'Booking cannot exceed 3 days.';
-            document.getElementById('packageSelection').style.display = 'none';
-            return;
-        }
-
-        // Change action to 'check' and submit via fetch
-        actionInput.value = 'check';
-
-        fetch('/createBooking', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: `bookingStartDate=${startDate}&bookingEndDate=${endDate}&action=check`
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.packages && data.packages.length > 0) {
-                document.getElementById('availabilityMessage').innerText = 'Available packages:';
-                const packageContainer = document.getElementById('packageContainer');
-                packageContainer.innerHTML = '';
-
-                data.packages.forEach(pkg => {
-                    const div = document.createElement('div');
-                    div.classList.add('form-check');
-
-                    const input = document.createElement('input');
-                    input.type = 'radio';
-                    input.classList.add('form-check-input');
-                    input.name = 'packageId';
-                    input.id = pkg.packageId;
-                    input.value = pkg.packageId;
-
-                    const label = document.createElement('label');
-                    label.classList.add('form-check-label');
-                    label.htmlFor = pkg.packageId;
-                    label.innerText = `${pkg.packageName} (RM${pkg.packagePrice})`;
-
-                    div.appendChild(input);
-                    div.appendChild(label);
-                    packageContainer.appendChild(div);
-                });
-
-                document.getElementById('packageSelection').style.display = 'block';
-            } else {
-                document.getElementById('availabilityMessage').innerText = 'No packages available for selected dates.';
-                document.getElementById('packageSelection').style.display = 'none';
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching packages:', error);
-            document.getElementById('availabilityMessage').innerText = 'Error fetching packages.';
-        });
-    });*/
-
     document.getElementById('checkButton').addEventListener('click', function () {
     const startDate = document.getElementById('bookingStartDate').value;
     const endDate = document.getElementById('bookingEndDate').value;
@@ -292,7 +193,7 @@ document.getElementById('bookingForm').addEventListener('submit', function (e) {
     }
 
     // Fetch available packages based on the selected dates
-    fetch(`/createBooking?bookingStartDate=${startDate}&bookingEndDate=${endDate}&action=check`, {
+    /*fetch(`/createBooking?bookingStartDate=${startDate}&bookingEndDate=${endDate}&action=check`, {
     method: 'POST',
     headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
@@ -343,7 +244,62 @@ document.getElementById('bookingForm').addEventListener('submit', function (e) {
         console.error('Error fetching packages:', error);
         document.getElementById('availabilityMessage').innerText = 'Error fetching package availability.';
         document.getElementById('packageSelection').style.display = 'none';
-    });
+    });*/
+
+    fetch(`/createBooking?bookingStartDate=${startDate}&bookingEndDate=${endDate}&action=check`, {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+})
+.then(response => {
+    if (!response.ok) {
+        throw new Error('Failed to fetch packages');
+    }
+    return response.json();
+})
+.then(data => {
+    console.log('Received data:', data);
+    const packages = data.packages;
+
+    if (!packages || packages.length === 0) {
+        document.getElementById('availabilityMessage').innerText = 'No packages available for the selected dates.';
+        document.getElementById('packageSelection').style.display = 'none';
+    } else {
+        document.getElementById('availabilityMessage').innerText = 'Available packages:';
+        const packageContainer = document.querySelector('#packageSelection .form-group');
+        packageContainer.innerHTML = '';
+
+        packages.forEach(pkg => {
+            const div = document.createElement('div');
+            div.classList.add('form-check');
+
+            const input = document.createElement('input');
+            input.type = 'radio';
+            input.classList.add('form-check-input');
+            input.name = 'packageId';
+            input.id = pkg.packageId;
+            input.value = pkg.packageId;
+
+            const label = document.createElement('label');
+            label.classList.add('form-check-label');
+            label.htmlFor = pkg.packageId;
+            label.innerText = `${pkg.packageName} (RM${pkg.packagePrice})`;
+
+            div.appendChild(input);
+            div.appendChild(label);
+            packageContainer.appendChild(div);
+        });
+
+        document.getElementById('packageSelection').style.display = 'block';
+    }
+})
+.catch(error => {
+    console.error('Error fetching packages:', error);
+    document.getElementById('availabilityMessage').innerText = 'Error fetching package availability.';
+    document.getElementById('packageSelection').style.display = 'none';
+});
+
 
 });
 
