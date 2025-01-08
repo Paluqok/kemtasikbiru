@@ -77,6 +77,12 @@ public class BookingController {
         model.addAttribute("packages", packages);
         return "createBooking";
     }
+
+    @PostMapping("/createBooking")
+public String handleCreateBookingPost() {
+    // Redirect to the appropriate handler
+    return "redirect:/createBooking";
+}
    
     private static final Logger logger = LoggerFactory.getLogger(BookingController.class);
     @PostMapping("/createBooking/check")
@@ -140,388 +146,6 @@ public String submitBooking(@RequestParam("bookingStartDate") LocalDateTime book
 
     return "redirect:/payment";
 }
-
-    /*@PostMapping("/createBooking")
-@ResponseBody  // Ensure JSON response for fetch calls
-public ResponseEntity<?> createBooking(@RequestParam("bookingStartDate") LocalDateTime bookingStartDate,
-                                       @RequestParam("bookingEndDate") LocalDateTime bookingEndDate,
-                                       @RequestParam(value = "packageId", required = false) Long packageId,
-                                       @RequestParam(value = "action", required = false) String action,
-                                       HttpSession session, Model model) {
-    if ("check".equals(action)) {
-        long bookingDays = java.time.Duration.between(bookingStartDate, bookingEndDate).toDays();
-
-        if (bookingDays > 3) {
-            return ResponseEntity.badRequest().body(Map.of("message", "Booking not available for more than 3 days."));
-        }
-
-        String sql = "SELECT p.*, COUNT(pa.activityid) AS activity_count FROM package p " +
-                     "LEFT JOIN packageactivity pa ON p.packageid = pa.packageid " +
-                     "GROUP BY p.packageid";
-        List<Package> packages = jdbcTemplate.query(sql, (rs, rowNum) -> {
-            Package pkg = new Package();
-            pkg.setPackageId(rs.getLong("packageid"));
-            pkg.setPackageName(rs.getString("packagename"));
-            pkg.setPackagePrice(rs.getDouble("packageprice"));
-            pkg.setActivityCount(rs.getInt("activity_count"));
-            return pkg;
-        });
-
-        packages = packages.stream()
-            .filter(pkg -> {
-                int activityCount = pkg.getActivityCount();
-                return (activityCount >= 8 && bookingDays == 3) || 
-                       (activityCount <= 3 && bookingDays == 1) || 
-                       (activityCount >= 4 && activityCount <= 7 && bookingDays == 2);
-            })
-            .collect(Collectors.toList());
-
-        return ResponseEntity.ok(Map.of("packages", packages));
-    }
-
-    if ("submit".equals(action)) {
-        if (packageId == null) {
-            return ResponseEntity.badRequest().body(Map.of("error", "You must select a package."));
-        }
-
-        Customer customer = (Customer) session.getAttribute("cust");
-        Long custId = customer.getCustId();
-
-        Booking booking = new Booking();
-        booking.setBookingStatus("Pending");
-        booking.setCustId(custId);
-        booking.setPackageId(packageId);
-        booking.setBookingStartDate(bookingStartDate);
-        booking.setBookingEndDate(bookingEndDate);
-
-        session.setAttribute("tempBooking", booking);
-
-        String packagePriceSql = "SELECT packageprice FROM package WHERE packageid = ?";
-        Double totalPrice = jdbcTemplate.queryForObject(packagePriceSql, Double.class, packageId);
-        session.setAttribute("totalPrice", totalPrice);
-
-        return ResponseEntity.ok(Map.of("message", "Booking successful, redirecting to payment."));
-    }
-
-    return ResponseEntity.badRequest().body(Map.of("error", "Invalid action."));
-}*/
-    /*@PostMapping("/createBooking")
-public String createBooking(@RequestParam("bookingStartDate") LocalDateTime bookingStartDate,
-                            @RequestParam("bookingEndDate") LocalDateTime bookingEndDate,
-                            @RequestParam(value = "packageId", required = false) Long packageId,
-                            @RequestParam(value = "action", required = false) String action, // Added action to distinguish requests
-                            HttpSession session, Model model) {
-    
-    // Action to check available packages
-    if ("check".equals(action)) {
-        long bookingDays = java.time.Duration.between(bookingStartDate, bookingEndDate).toDays();
-
-        // Ensure booking duration is within limits
-        if (bookingDays > 3) {
-            model.addAttribute("availabilityMessage", "Booking not available for more than 3 days.");
-            return "createBooking";
-        }
-
-        // Fetch packages based on available dates
-        String sql = "SELECT p.*, COUNT(pa.activityid) AS activity_count FROM package p " +
-                     "LEFT JOIN packageactivity pa ON p.packageid = pa.packageid " +
-                     "GROUP BY p.packageid";
-        List<Package> packages = jdbcTemplate.query(sql, (rs, rowNum) -> {
-            Package pkg = new Package();
-            pkg.setPackageId(rs.getLong("packageid"));
-            pkg.setPackageName(rs.getString("packagename"));
-            pkg.setPackagePrice(rs.getDouble("packageprice"));
-            pkg.setActivityCount(rs.getInt("activity_count"));
-            return pkg;
-        });
-
-        // Filter packages based on activity count and booking days
-        packages = packages.stream()
-            .filter(pkg -> {
-                int activityCount = pkg.getActivityCount();
-                return (activityCount >= 8 && bookingDays == 3) || 
-                       (activityCount <= 3 && bookingDays == 1) || 
-                       (activityCount >= 4 && activityCount <= 7 && bookingDays == 2);
-            })
-            .collect(Collectors.toList());
-
-        // Log packages to verify the data
-        System.out.println("Available packages: " + packages);
-
-        // Return packages in JSON format (you may need to adjust this based on your framework)
-        model.addAttribute("packages", packages);
-        return "createBooking";  // Show package selection
-    }
-
-    // Action for submitting booking (with package selection)
-    if ("submit".equals(action)) {
-        if (packageId == null) {
-            model.addAttribute("error", "You must select a package.");
-            return "createBooking";  // Return to the booking page if package isn't selected
-        }
-
-        // Process the booking submission
-        Customer customer = (Customer) session.getAttribute("cust");
-        Long custId = customer.getCustId();
-
-        Booking booking = new Booking();
-        booking.setBookingStatus("Pending");
-        booking.setCustId(custId);
-        booking.setPackageId(packageId);
-        booking.setBookingStartDate(bookingStartDate);
-        booking.setBookingEndDate(bookingEndDate);
-
-        session.setAttribute("tempBooking", booking);
-
-        // Calculate the total price for the package selected
-        String packagePriceSql = "SELECT packageprice FROM package WHERE packageid = ?";
-        Double totalPrice = jdbcTemplate.queryForObject(packagePriceSql, Double.class, packageId);
-        session.setAttribute("totalPrice", totalPrice);
-
-        // Redirect to the payment page
-        return "redirect:/payment";
-    }
-
-    return "createBooking";  // Default action, if not check or submit
-}*/
-
-
-
-    /*@PostMapping("/createBooking")
-public String createBooking(
-    @RequestParam("bookingStartDate") LocalDateTime bookingStartDate,
-    @RequestParam("bookingEndDate") LocalDateTime bookingEndDate,
-    @RequestParam("packageId") Long packageId,
-    @RequestParam("action") String action, // "check" or "submit"
-    HttpSession session, 
-    Model model) {
-
-    logger.info("Booking request received for action: {}", action);
-
-    // Validate date range
-    if (bookingEndDate.isAfter(bookingStartDate.plusDays(3))) {
-        model.addAttribute("dateMessage", "Booking duration cannot exceed 3 days.");
-        return "createBooking";
-    }
-
-    long bookingDays = java.time.Duration.between(bookingStartDate, bookingEndDate).toDays();
-
-    // Fetch package details
-    String packageSql = "SELECT COUNT(activityid) AS activity_count FROM packageactivity WHERE packageid = ?";
-    Integer activityCount = jdbcTemplate.queryForObject(packageSql, Integer.class, packageId);
-
-    if ((activityCount >= 8 && bookingDays != 3) || 
-        (activityCount <= 3 && bookingDays != 1) || 
-        (activityCount >= 4 && activityCount <= 7 && bookingDays != 2)) {
-        model.addAttribute("dateMessage", "Selected package duration does not match booking days.");
-        return "createBooking";
-    }
-
-    if ("check".equals(action)) {
-        // Action: Check available packages
-        String sql = "SELECT p.*, COUNT(pa.activityid) AS activity_count FROM package p " +
-                     "LEFT JOIN packageactivity pa ON p.packageid = pa.packageid " +
-                     "GROUP BY p.packageid";
-        List<Package> packages = jdbcTemplate.query(sql, (rs, rowNum) -> {
-            Package pkg = new Package();
-            pkg.setPackageId(rs.getLong("packageid"));
-            pkg.setPackageName(rs.getString("packagename"));
-            pkg.setPackagePrice(rs.getDouble("packageprice"));
-            pkg.setActivityCount(rs.getInt("activity_count"));
-            return pkg;
-        });
-
-        // Filter packages
-        packages = packages.stream()
-            .filter(pkg -> {
-                int activityCountPkg = pkg.getActivityCount();
-                if ((activityCountPkg >= 8 && bookingDays == 3) || 
-                    (activityCountPkg <= 3 && bookingDays == 1) || 
-                    (activityCountPkg >= 4 && activityCountPkg <= 7 && bookingDays == 2)) {
-                    return true;
-                }
-                return false;
-            })
-            .collect(Collectors.toList());
-
-        model.addAttribute("availablePackages", packages);
-        return "createBooking"; // Stay on the same page, showing available packages
-    } 
-
-    if ("submit".equals(action)) {
-        // Action: Submit booking
-        Customer customer = (Customer) session.getAttribute("cust");
-        Long custId = customer.getCustId();
-
-        Booking booking = new Booking();
-        booking.setBookingStatus("Pending");
-        booking.setStaffId(null); // Assuming staffId is null
-        booking.setCustId(custId);
-        booking.setPackageId(packageId);
-        booking.setBookingStartDate(bookingStartDate);
-        booking.setBookingEndDate(bookingEndDate);
-
-        session.setAttribute("tempBooking", booking);
-
-        // Fetch package price and store in session
-        String packagePriceSql = "SELECT packageprice FROM package WHERE packageid = ?";
-        Double totalPrice = jdbcTemplate.queryForObject(packagePriceSql, Double.class, packageId);
-        session.setAttribute("totalPrice", totalPrice);
-
-        logger.info("Booking and price saved in session: tempBooking = {}", booking);
-        logger.info("Total price saved in session: totalPrice = {}", totalPrice);
-
-        return "redirect:/payment";
-    }
-
-    // Default fallback
-    model.addAttribute("dateMessage", "Invalid action specified.");
-    return "createBooking";
-}*/
-
-
-    /*@PostMapping("/createBooking")
-public String createBooking(@RequestParam("bookingStartDate") LocalDateTime bookingStartDate,
-                            @RequestParam("bookingEndDate") LocalDateTime bookingEndDate,
-                            @RequestParam("packageId") Long packageId,
-                            HttpSession session, Model model) {
-    
-    // Logging incoming request details
-    logger.info("Booking request received for customer: {} with packageId: {} from {} to {}",
-        session.getAttribute("cust"), packageId, bookingStartDate, bookingEndDate);
-
-    // Check if booking duration exceeds 3 days
-    if (bookingEndDate.isAfter(bookingStartDate.plusDays(3))) {
-        model.addAttribute("dateMessage", "Booking duration cannot exceed 3 days.");
-        return "createBooking";
-    }
-
-    // Retrieve selected package details
-    String packageSql = "SELECT COUNT(activityid) AS activity_count FROM packageactivity WHERE packageid = ?";
-    Integer activityCount = jdbcTemplate.queryForObject(packageSql, Integer.class, packageId);
-
-    long bookingDays = java.time.Duration.between(bookingStartDate, bookingEndDate).toDays();
-
-    if ((activityCount >= 8 && bookingDays != 3) || 
-        (activityCount <= 3 && bookingDays != 1) || 
-        (activityCount >= 4 && activityCount <= 7 && bookingDays != 2)) {
-        model.addAttribute("dateMessage", "Selected package duration does not match booking days.");
-        return "createBooking";
-    }
-
-logger.info("sini");
-    // Temporarily store booking details in session (not saved yet)
-    Customer customer = (Customer) session.getAttribute("cust");
-    Long custId = customer.getCustId();
-
-    // Create the booking object using setter methods
-    Booking booking = new Booking();
-    booking.setBookingStatus("Pending");
-    booking.setStaffId(null); // Assuming staffId is null
-    booking.setCustId(custId);
-    booking.setPackageId(packageId);
-    booking.setBookingStartDate(bookingStartDate);
-    booking.setBookingEndDate(bookingEndDate);
-
-    session.setAttribute("tempBooking", booking);
-
-    // Redirect to payment page with total price
-    String packagePriceSql = "SELECT packageprice FROM package WHERE packageid = ?";
-    Double totalPrice = jdbcTemplate.queryForObject(packagePriceSql, Double.class, packageId);
-    session.setAttribute("totalPrice", totalPrice);
-    logger.info("Booking and price saved in session: tempBooking = " + session.getAttribute("tempBooking"));
-    logger.info("Total price saved in session: totalPrice = " + session.getAttribute("totalPrice"));
-
-
-    // Log successful booking
-    logger.info("Booking successfully created for customer: {} with packageId: {}. Redirecting to payment page.",
-        custId, packageId);
-    return "redirect:/payment";
-}*/
-
-   /*@GetMapping("/createBooking")
-public String showCreateBookingForm(HttpSession session, Model model) {
-    Customer customer = (Customer) session.getAttribute("cust");
-    if (customer == null) {
-        return "redirect:/custLogin";
-    }
-
-    String sql = "SELECT p.*, COUNT(pa.activityid) AS activity_count FROM package p " +
-                 "LEFT JOIN packageactivity pa ON p.packageid = pa.packageid " +
-                 "GROUP BY p.packageid";
-
-    List<Package> packages = jdbcTemplate.query(sql, (rs, rowNum) -> {
-        Package pkg = new Package();
-        pkg.setPackageId(rs.getLong("packageid"));
-        pkg.setPackageName(rs.getString("packagename"));
-        pkg.setPackagePrice(rs.getDouble("packageprice"));
-        pkg.setActivityCount(rs.getInt("activity_count"));
-        return pkg;
-    });
-
-    model.addAttribute("packages", packages);
-    return "createBooking";
-}
-
-    private static final Logger logger = LoggerFactory.getLogger(BookingController.class);
-@PostMapping("/createBooking")
-public String createBooking(@RequestParam("bookingStartDate") LocalDateTime bookingStartDate,
-                            @RequestParam("bookingEndDate") LocalDateTime bookingEndDate,
-                            @RequestParam("packageId") Long packageId,
-                            HttpSession session, Model model) {
-    
-    // Logging incoming request details
-    logger.info("Booking request received for customer: {} with packageId: {} from {} to {}",
-        session.getAttribute("cust"), packageId, bookingStartDate, bookingEndDate);
-
-    // Check if booking duration exceeds 3 days
-    if (bookingEndDate.isAfter(bookingStartDate.plusDays(3))) {
-        model.addAttribute("dateMessage", "Booking duration cannot exceed 3 days.");
-        return "createBooking";
-    }
-
-    // Retrieve selected package details
-    String packageSql = "SELECT COUNT(activityid) AS activity_count FROM packageactivity WHERE packageid = ?";
-    Integer activityCount = jdbcTemplate.queryForObject(packageSql, Integer.class, packageId);
-
-    long bookingDays = java.time.Duration.between(bookingStartDate, bookingEndDate).toDays();
-
-    if ((activityCount >= 8 && bookingDays != 3) || 
-        (activityCount <= 3 && bookingDays != 1) || 
-        (activityCount >= 4 && activityCount <= 7 && bookingDays != 2)) {
-        model.addAttribute("dateMessage", "Selected package duration does not match booking days.");
-        return "createBooking";
-    }
-
-logger.info("sini");
-    // Temporarily store booking details in session (not saved yet)
-    Customer customer = (Customer) session.getAttribute("cust");
-    Long custId = customer.getCustId();
-
-    // Create the booking object using setter methods
-    Booking booking = new Booking();
-    booking.setBookingStatus("Pending");
-    booking.setStaffId(null); // Assuming staffId is null
-    booking.setCustId(custId);
-    booking.setPackageId(packageId);
-    booking.setBookingStartDate(bookingStartDate);
-    booking.setBookingEndDate(bookingEndDate);
-
-    session.setAttribute("tempBooking", booking);
-
-    // Redirect to payment page with total price
-    String packagePriceSql = "SELECT packageprice FROM package WHERE packageid = ?";
-    Double totalPrice = jdbcTemplate.queryForObject(packagePriceSql, Double.class, packageId);
-    session.setAttribute("totalPrice", totalPrice);
-    logger.info("Booking and price saved in session: tempBooking = " + session.getAttribute("tempBooking"));
-    logger.info("Total price saved in session: totalPrice = " + session.getAttribute("totalPrice"));
-
-
-    // Log successful booking
-    logger.info("Booking successfully created for customer: {} with packageId: {}. Redirecting to payment page.",
-        custId, packageId);
-    return "redirect:/payment";
-}*/
 
     @GetMapping("/custViewBooking")
     public String customerViewBooking(HttpSession session, Model model) {
@@ -679,4 +303,68 @@ logger.info("sini");
     }
 }
 }
+        /*@PostMapping("/createBooking")
+@ResponseBody  // Ensure JSON response for fetch calls
+public ResponseEntity<?> createBooking(@RequestParam("bookingStartDate") LocalDateTime bookingStartDate,
+                                       @RequestParam("bookingEndDate") LocalDateTime bookingEndDate,
+                                       @RequestParam(value = "packageId", required = false) Long packageId,
+                                       @RequestParam(value = "action", required = false) String action,
+                                       HttpSession session, Model model) {
+    if ("check".equals(action)) {
+        long bookingDays = java.time.Duration.between(bookingStartDate, bookingEndDate).toDays();
+
+        if (bookingDays > 3) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Booking not available for more than 3 days."));
+        }
+
+        String sql = "SELECT p.*, COUNT(pa.activityid) AS activity_count FROM package p " +
+                     "LEFT JOIN packageactivity pa ON p.packageid = pa.packageid " +
+                     "GROUP BY p.packageid";
+        List<Package> packages = jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Package pkg = new Package();
+            pkg.setPackageId(rs.getLong("packageid"));
+            pkg.setPackageName(rs.getString("packagename"));
+            pkg.setPackagePrice(rs.getDouble("packageprice"));
+            pkg.setActivityCount(rs.getInt("activity_count"));
+            return pkg;
+        });
+
+        packages = packages.stream()
+            .filter(pkg -> {
+                int activityCount = pkg.getActivityCount();
+                return (activityCount >= 8 && bookingDays == 3) || 
+                       (activityCount <= 3 && bookingDays == 1) || 
+                       (activityCount >= 4 && activityCount <= 7 && bookingDays == 2);
+            })
+            .collect(Collectors.toList());
+
+        return ResponseEntity.ok(Map.of("packages", packages));
+    }
+
+    if ("submit".equals(action)) {
+        if (packageId == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "You must select a package."));
+        }
+
+        Customer customer = (Customer) session.getAttribute("cust");
+        Long custId = customer.getCustId();
+
+        Booking booking = new Booking();
+        booking.setBookingStatus("Pending");
+        booking.setCustId(custId);
+        booking.setPackageId(packageId);
+        booking.setBookingStartDate(bookingStartDate);
+        booking.setBookingEndDate(bookingEndDate);
+
+        session.setAttribute("tempBooking", booking);
+
+        String packagePriceSql = "SELECT packageprice FROM package WHERE packageid = ?";
+        Double totalPrice = jdbcTemplate.queryForObject(packagePriceSql, Double.class, packageId);
+        session.setAttribute("totalPrice", totalPrice);
+
+        return ResponseEntity.ok(Map.of("message", "Booking successful, redirecting to payment."));
+    }
+
+    return ResponseEntity.badRequest().body(Map.of("error", "Invalid action."));
+}*/
 
