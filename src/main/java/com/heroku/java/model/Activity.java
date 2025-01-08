@@ -9,7 +9,7 @@ public class Activity {
     private String activityDuration;
     private double activityPrice;
     private String activityImagePath;
-    private MultipartFile activityImage;
+    private String activityImage;
 
     // Default constructor
     public Activity() {
@@ -65,12 +65,16 @@ public class Activity {
         this.activityImagePath = activityImage;
     }
 
-    public MultipartFile getActivityImage() {
+    public String getActivityImage() {
         return activityImage;
     }
 
-    public void setActivityImage(MultipartFile activityImage) {
+    public void setActivityImage(String activityImage) {
         this.activityImage = activityImage;
+    }
+
+    public void setActivityImage(byte[] bytes) {
+        throw new UnsupportedOperationException("Unimplemented method 'setActivityImage'");
     }
 
     @Override
