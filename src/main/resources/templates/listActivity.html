@@ -63,69 +63,7 @@
 </head>
 <body>
 <header>
-    <!-- Navbar -->
     <div th:insert="~{fragments/staffnavbar::navbar}"></div>
-    <!-- <div class="sidebar close">
-        <div class="logo-details">
-            <i class='bx bxl-c-plus-plus'></i>
-            <span class="logo_name">KemTasikBiru</span>
-        </div>
-        <ul class="nav-links">
-            <li>
-                <a href="/homeStaff">
-                    <i class='bx bx-grid-alt' ></i>
-                    <span class="link_name">Home</span>
-                </a>
-                <ul class="sub-menu blank">
-                    <li><a class="link_name" href="/homeStaff">Home</a></li>
-                </ul>
-            </li>
-            <li>
-                <a href="/listActivities">
-                    <i class='bx bx-line-chart' ></i>
-                    <span class="link_name">Activity</span>
-                </a>
-                <ul class="sub-menu blank">
-                    <li><a class="link_name" href="/listActivities">Activity</a></li>
-                </ul>
-            </li>
-            <li>
-                <a href="#">
-                    <i class='bx bx-compass' ></i>
-                    <span class="link_name">History</span>
-                </a>
-                <ul class="sub-menu blank">
-                    <li><a class="link_name" href="#">History</a></li>
-                </ul>
-            </li>
-            <li>
-                <a href="/staffProfile">
-                    <i class='bx bx-history'></i>
-                    <span class="link_name">Profile</span>
-                </a>
-                <ul class="sub-menu blank">
-                    <li><a class="link_name" href="/staffProfile">Profile</a></li>
-                </ul>
-            </li>
-            <li>
-                <div class="profile-details">
-                    <div class="profile-content">
-                        <img src="image/profile.jpg" alt="profileImg">
-                    </div>
-                    <div class="name-job">
-                        <div class="profile_name">Log Out</div>
-                    </div>
-                    <a href="/staffLogin"><i class='bx bx-log-out' ></i></a>
-                </div>
-            </li>
-        </ul>
-    </div>
-    <section class="home-section">
-        <div class="home-content">
-            <i class='bx bx-menu' ></i>
-        </div>
-    </section> -->
-    <!--<Script for Navbar>-->
     <script>
         let arrow = document.querySelectorAll(".arrow");
         for (var i = 0; i < arrow.length; i++) {
@@ -155,7 +93,8 @@
     <div class="row">
         <div th:each="activity : ${activities}" class="col-md-3">
             <div class="card">
-                <img th:src="@{'/images/' + ${activity.getActivityImagePath()}}" alt="Activity Image" />
+                <!--<img th:src="@{'/images/' + ${activity.getActivityImagePath()}}" alt="Activity Image" />-->
+                <img th:src="@{'data:image/jpeg;base64,' + ${product.productImage}}" alt="Product Image" width="100" height="100"/>
                 <div class="card-body">
                     <h5 class="card-title" th:text="${activity.activityName}">ActivityName</h5>
                     <p class="card-text">
