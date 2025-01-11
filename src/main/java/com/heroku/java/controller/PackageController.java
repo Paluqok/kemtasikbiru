@@ -208,7 +208,7 @@ public class PackageController {
     }
 
     @GetMapping("/deletePackage/{packageId}")
-    public String deletePackage(@PathVariable Long packageId, HttpSession session) {
+    public String deletePackage(@PathVariable Long packageId, HttpSession session, Model model) {
         Staff staff = (Staff) session.getAttribute("staff");
         if (staff == null) {
             return "redirect:/staffLogin";
