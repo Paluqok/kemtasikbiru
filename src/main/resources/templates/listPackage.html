@@ -19,9 +19,12 @@
     <div id="deleteSuccessPopup" class="alert alert-success hidden" role="alert">
         Package deleted successfully!
     </div>
+    <div id="deleteFailedPopup" class="alert alert-danger hidden" role="alert">
+        Package cannot be deleted because it has been booked.
+    </div>
 
     <style>
-        #createSuccessPopup, #deleteSuccessPopup, #updateSuccessPopup {
+        #createSuccessPopup, #deleteSuccessPopup, #updateSuccessPopup, #deleteFailedPopup {
             position: fixed;
             top: 20px;
             right: 20px;
@@ -170,6 +173,20 @@
             window.history.replaceState({}, '', url);
         }, 3000);
     }
+
+    // Check for deleteFailed
+    if (urlParams.get('deleteFailed') === 'true') {
+            const popup = document.getElementById('deleteFailedPopup');
+            popup.classList.add('show');
+            popup.classList.remove('hidden');
+            setTimeout(() => {
+                popup.classList.remove('show');
+                popup.classList.add('hidden');
+                const url = new URL(window.location);
+                url.searchParams.delete('deleteFailed');
+                window.history.replaceState({}, '', url);
+            }, 5000);
+        }
 });
 
     </script>

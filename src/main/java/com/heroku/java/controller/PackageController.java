@@ -214,6 +214,16 @@ public class PackageController {
             return "redirect:/staffLogin";
         }
 
+        // Check if package has been booked
+        String checkBookingSql = "SELECT COUNT(*) FROM booking WHERE packageid = ?";
+        Integer bookingCount = jdbcTemplate.queryForObject(checkBookingSql, Integer.class, packageId);
+
+        if (bookingCount > 0) {
+        // Package has been booked, redirect with an error message
+            model.addAttribute("deleteFailed", true);
+            return "redirect:/listPackages";
+        }
+
         String deletePackageActivitySql = "DELETE FROM packageactivity WHERE packageid = ?";
         jdbcTemplate.update(deletePackageActivitySql, packageId);
 
