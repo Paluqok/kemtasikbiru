@@ -208,7 +208,7 @@ public class PackageController {
     }
 
     @GetMapping("/deletePackage/{packageId}")
-    public String deletePackage(@PathVariable Long packageId, HttpSession session, Model model) {
+    public String deletePackage(@PathVariable Long packageId, HttpSession session) {
         Staff staff = (Staff) session.getAttribute("staff");
         if (staff == null) {
             return "redirect:/staffLogin";
@@ -220,8 +220,7 @@ public class PackageController {
 
         if (bookingCount > 0) {
         // Package has been booked, redirect with an error message
-            model.addAttribute("deleteFailed", true);
-            return "redirect:/listPackages";
+            return "redirect:/listPackages?deleteFailed=true";
         }
 
         String deletePackageActivitySql = "DELETE FROM packageactivity WHERE packageid = ?";
