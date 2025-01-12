@@ -223,7 +223,7 @@ public String submitBooking(@RequestParam("bookingStartDate") LocalDateTime book
 
         String sql = "UPDATE booking SET bookingstatus = 'Approved', staffid = ? WHERE bookingid = ?";
         jdbcTemplate.update(sql, staffId, bookingId);
-        return "redirect:/staffViewBooking";
+        return "redirect:/staffViewBooking?approveSuccess=true";
     }
 
     @PostMapping("/rejectBooking/{id}")
@@ -235,7 +235,7 @@ public String submitBooking(@RequestParam("bookingStartDate") LocalDateTime book
 
         String sql = "UPDATE booking SET bookingstatus = 'Rejected' WHERE bookingid = ?";
         jdbcTemplate.update(sql, bookingId);
-        return "redirect:/staffViewBooking";
+        return "redirect:/staffViewBooking?rejectSuccess=true";
     }
     
     @PostMapping("/deleteBooking/{id}")
@@ -247,7 +247,7 @@ public String submitBooking(@RequestParam("bookingStartDate") LocalDateTime book
 
         String sql = "DELETE FROM public.booking WHERE bookingid = ?";
         jdbcTemplate.update(sql, bookingId);
-        return "redirect:/staffViewBooking";
+        return "redirect:/staffViewBooking?deleteSuccess=true";
     }
 
     @GetMapping("/checkPackages")
