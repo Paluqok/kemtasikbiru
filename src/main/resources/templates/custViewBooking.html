@@ -14,11 +14,36 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
+    <style>
+    #createSuccessPopup, #deleteSuccessPopup, #updateSuccessPopup {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        padding: 15px 20px;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: opacity 0.5s ease-in-out;
+        }
+
+    .hidden {
+        display: none;
+        opacity: 0;
+    }
+
+    .show {
+        display: block;
+        opacity: 1;
+    }
+    </style>
     <header>
       <!-- Navbar -->
       <div th:insert="~{fragments/custnavbar::navbar}"></div>
       <!-- Navbar -->
     </header>
+    <div id="createSuccessPopup" class="alert alert-success hidden" role="alert">
+        Booking created successfully!
+    </div>
     <div class="container">
         <h1>My Bookings</h1>
         <div class="row">
@@ -54,5 +79,22 @@
             </table>
         </div>
     </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('createSuccess') === 'true') {
+            const popup = document.getElementById('createSuccessPopup');
+            popup.classList.add('show');
+            popup.classList.remove('hidden');
+            setTimeout(() => {
+                popup.classList.remove('show');
+                popup.classList.add('hidden');
+                const url = new URL(window.location);
+                url.searchParams.delete('createSuccess');
+                window.history.replaceState({}, '', url);
+            }, 3000);
+        }
+    });
+    </script>
 </body>
 </html>

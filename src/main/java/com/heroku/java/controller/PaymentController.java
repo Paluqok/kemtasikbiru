@@ -107,7 +107,7 @@ public String submitPayment(@RequestParam("paymentReceipt") MultipartFile paymen
     String insertPaymentSql = "INSERT INTO payment (bookingid, paymentdate, paymentreceipt) VALUES (?, ?, ?)";
     jdbcTemplate.update(insertPaymentSql, payment.getBookingId(), payment.getPaymentDate(), payment.getPaymentReceipt());
 
-    return "redirect:/custViewBooking";
+    return "redirect:/custViewBooking?createSuccess=true";
 }
 
     // Function throws IOException if it fails to read the bytes of the image of the payment receipt
