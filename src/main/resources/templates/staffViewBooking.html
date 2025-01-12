@@ -156,6 +156,7 @@
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+        const urlParams = new URLSearchParams(window.location.search);
 
         const approveSuccessParam = urlParams.get('approveSuccess');
         if (approveSuccessParam === 'true') {
@@ -189,7 +190,6 @@
             }
         }
 
-        const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('deleteSuccess') === 'true') {
             const popup = document.getElementById('deleteSuccessPopup');
             popup.classList.add('show');
