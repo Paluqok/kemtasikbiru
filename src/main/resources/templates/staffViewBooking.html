@@ -157,9 +157,10 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
         const urlParams = new URLSearchParams(window.location.search);
-
+        console.log('URL Parameters:', urlParams.toString());
         const approveSuccessParam = urlParams.get('approveSuccess');
         if (approveSuccessParam === 'true') {
+            console.log('Approve success detected');
             const popup = document.getElementById('approveSuccessPopup');
             if (popup) {
                 popup.classList.add('show');
@@ -167,6 +168,7 @@
                 setTimeout(() => {
                     popup.classList.remove('show');
                     popup.classList.add('hidden');
+                    console.log('Popup hidden after timeout');
                     const url = new URL(window.location);
                     url.searchParams.delete('approveSuccess');
                     window.history.replaceState({}, '', url);
