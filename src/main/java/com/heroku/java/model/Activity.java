@@ -21,7 +21,7 @@ public class Activity {
         this.activityName = activityName;
         this.activityDuration = activityDuration;
         this.activityPrice = activityPrice;
-        this.activityImagePath = activityImage;
+        this.activityImagePath = activityImagePath;
     }
 
     // Getters and setters
