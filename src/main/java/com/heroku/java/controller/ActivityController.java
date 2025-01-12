@@ -401,6 +401,14 @@ public class ActivityController {
             return "redirect:/staffLogin";
         }
 
+        String checkPackageSql = "SELECT COUNT(*) FROM packageactivity WHERE activityid = ?";
+        Integer packageCount = jdbcTemplate.queryForObject(checkPackageSql, Integer.class, activityId);
+
+        if (packageCount > 0) {
+        // Activity already associated with package, redirect with an error message
+            return "redirect:/listActivity?deleteFailed=true";
+        }
+
         // Since we have no way of knowing the type of activity that we want to delete
         // Try to delete from public.dry table first before deleting from public.activity
         try {

@@ -31,7 +31,7 @@
         .btn {
             margin: 5px;
         }
-        #createSuccessPopup, #deleteSuccessPopup, #updateSuccessPopup {
+        #createSuccessPopup, #deleteSuccessPopup, #updateSuccessPopup, #deleteFailedPopup {
         position: fixed;
         top: 20px;
         right: 20px;
@@ -90,6 +90,9 @@
 </div>
 <div id="updateSuccessPopup" class="alert alert-success hidden" role="alert">
     Activity updates successfully!
+</div>
+<div id="deleteFailedPopup" class="alert alert-danger hidden" role="alert">
+    Activity cannot be deleted because it is associated with Package.
 </div>
 
 <div class="container">
@@ -208,6 +211,19 @@ document.getElementById('confirmDeleteBtn').addEventListener('click', function (
                     window.history.replaceState({}, '', url);
                 }, 3000);
             }
+        }
+        // Check for deleteFailed
+    if (urlParams.get('deleteFailed') === 'true') {
+            const popup = document.getElementById('deleteFailedPopup');
+            popup.classList.add('show');
+            popup.classList.remove('hidden');
+            setTimeout(() => {
+                popup.classList.remove('show');
+                popup.classList.add('hidden');
+                const url = new URL(window.location);
+                url.searchParams.delete('deleteFailed');
+                window.history.replaceState({}, '', url);
+            }, 5000);
         }
     });
 </script>
