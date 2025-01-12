@@ -192,14 +192,17 @@ public class ActivityController {
             }
         }
 
+         // Save the imageBase64 string to the model field `activityImagePath`
+        activity.setActivityImagePath(imageBase64);
+
         String sql = "INSERT INTO public.activity(activityduration, activityname, activityprice, activityimage) VALUES (?, ?, ?, ?)";
         try (Connection conn = dataSource.getConnection()) {
             conn.setAutoCommit(false);
             try (PreparedStatement statement = conn.prepareStatement(sql, new String[] {"activityid"})) {
+                statement.setString(1, activityDuration);
                 statement.setString(2, activityName);
                 statement.setDouble(3, activityPrice);
-                statement.setString(1, activityDuration);
-                statement.setString(4, activityImagePath);
+                statement.setString(4, imageBase64);
 
                 // Execute the insert statement
                 int affectedRows = statement.executeUpdate();

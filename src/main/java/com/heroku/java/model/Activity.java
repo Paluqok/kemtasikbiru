@@ -61,8 +61,8 @@ public class Activity {
         return activityImagePath;
     }
 
-    public void setActivityImagePath(String activityImage) {
-        this.activityImagePath = activityImage;
+    public void setActivityImagePath(String activityImagePath) {
+        this.activityImagePath = activityImagePath;
     }
 
     public MultipartFile getActivityImage() {
