@@ -152,7 +152,7 @@ public class ActivityController {
 
     @PostMapping("/createActivities")
     public String createActivity(HttpSession session, 
-                                 @ModelAttribute("createActivities") 
+                                 @ModelAttribute("activity") 
                                  @RequestParam("name") String activityName,
                                  @RequestParam("duration") String activityDuration,
                                  @RequestParam("price") double activityPrice,
@@ -191,9 +191,6 @@ public class ActivityController {
                 e.printStackTrace();
             }
         }
-
-         // Save the imageBase64 string to the model field `activityImagePath`
-        activity.setActivityImagePath(imageBase64);
 
         // Instantiate the Activity object and set the fields
         Activity activity = new Activity();
