@@ -345,24 +345,7 @@ public String updateActivityForm(@PathVariable Long id, HttpSession session, Mod
             System.out.println("activityType is not selected");
             sql = "UPDATE public.activity SET activityname = ?, activityduration = ?, activityprice = ?, activityimage = ? WHERE activityid = ?;";
         }
-        
-        // Handle activityImagePath if it's empty or not
-        if (!activityImage.isEmpty()) {
-           
-            String uploadDirectory = "src/main/resources/images/"; // Define this directory for saving the image
-            
-            try {
-                Path filePath = Paths.get(uploadDirectory + activityImage.getOriginalFilename());
-                Files.write(filePath, activityImage.getBytes());
-                imageBase64 = activityImage.getOriginalFilename(); // Save just the filename or relative path
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            // Retrieve the current image path if no new image is uploaded
-            String currentImagePath = updatedActivity.getActivityImagePath();
-            activityImagePath = currentImagePath;
-        }
+    
 
         // Set the SQL statement and execute it
         try (Connection conn = dataSource.getConnection();
