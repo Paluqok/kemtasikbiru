@@ -10,6 +10,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Base64;
+import java.io.IOException;
 
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -164,7 +166,7 @@ public class ActivityController {
         }
 
         // Handle file upload
-        String activityImagePath = null;
+        /*String activityImagePath = null;
         if (!activityImage.isEmpty()) {
             String uploadDirectory = "src/main/resources/images/"; // Define this directory for saving the image
             try {
@@ -176,6 +178,17 @@ public class ActivityController {
             } catch (IOException e) {
                 e.printStackTrace();
                 // Handle the exception accordingly
+            }
+        }*/
+
+        // Convert the image to Base64 string
+        String imageBase64 = null;
+        if (!activityImage.isEmpty()) {
+            try {
+                byte[] imageBytes = activityImage.getBytes();
+                imageBase64 = Base64.getEncoder().encodeToString(imageBytes); // Convert to Base64
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
 

@@ -16,7 +16,7 @@ public class Activity {
     }
 
     // Parameterized constructor
-    public Activity(Long activityId, String activityName, String activityDuration, double activityPrice, String activityImage) {
+    public Activity(Long activityId, String activityName, String activityDuration, double activityPrice, String activityImagePath) {
         this.activityId = activityId;
         this.activityName = activityName;
         this.activityDuration = activityDuration;
