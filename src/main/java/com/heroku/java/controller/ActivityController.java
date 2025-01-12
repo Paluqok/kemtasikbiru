@@ -233,7 +233,7 @@ public class ActivityController {
             e.printStackTrace();
         }
 
-        return "redirect:/listActivity";
+        return "redirect:/listActivity?createSuccess=true";
     }
 
     @GetMapping("/updateActivity/{id}")
@@ -370,7 +370,7 @@ public class ActivityController {
             e.printStackTrace();
         }
 
-        return "redirect:/listActivity";
+        return "redirect:/listActivity?updateSuccess=true";
     }
 
     // @PostMapping("/deleteActivity/{id}")
