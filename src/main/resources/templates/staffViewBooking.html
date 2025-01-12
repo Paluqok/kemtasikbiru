@@ -24,16 +24,11 @@
             border-radius: 5px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             transition: opacity 0.5s ease-in-out;
+            display: none;
             }
     
-        .hidden {
-            display: none;
-            opacity: 0;
-        }
-    
         .show {
-            display: block;
-            opacity: 1;
+            display: block !important;
         }
     </style>
     <header>
@@ -142,7 +137,7 @@
                     delete: `/deleteBooking/${currentBookingId}`
                 };
 
-                fetch(urls[currentAction], { method: 'POST' })
+                /*fetch(urls[currentAction], { method: 'POST' })
                     .then(response => {
                         $('#confirmationModal').modal('hide');
                         if (response.ok) {
@@ -150,12 +145,29 @@
                         } else {
                             alert(`Failed to ${currentAction} booking`);
                         }
-                    });
+                    });*/
+                    fetch(urls[currentAction], { 
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            $('#confirmationModal').modal('hide');
+            window.location.href = `/staffViewBooking?${currentAction}Success=true`;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert(`Failed to ${currentAction} booking: ${error.message}`);
+        });
             }
         });
     </script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        /*document.addEventListener('DOMContentLoaded', function () {
         const urlParams = new URLSearchParams(window.location.search);
         console.log('URL Parameters:', urlParams.toString());
         const approveSuccessParam = urlParams.get('approveSuccess');
@@ -204,7 +216,35 @@
                 window.history.replaceState({}, '', url);
             }, 3000);
         }
-    });
+    });*/
+    document.addEventListener('DOMContentLoaded', function () {
+    function showPopup(popupId) {
+        const popup = document.getElementById(popupId);
+        if (popup) {
+            popup.style.display = 'block';
+            setTimeout(() => {
+                popup.style.display = 'none';
+                const url = new URL(window.location);
+                url.searchParams.delete(popupId.replace('Popup', 'Success'));
+                window.history.replaceState({}, '', url);
+            }, 3000);
+        }
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    if (urlParams.get('approveSuccess') === 'true') {
+        showPopup('approveSuccessPopup');
+    }
+    
+    if (urlParams.get('rejectSuccess') === 'true') {
+        showPopup('rejectSuccessPopup');
+    }
+    
+    if (urlParams.get('deleteSuccess') === 'true') {
+        showPopup('deleteSuccessPopup');
+    }
+});
     </script>
 </body>
 </html>
