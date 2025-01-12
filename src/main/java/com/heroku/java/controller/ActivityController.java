@@ -195,6 +195,13 @@ public class ActivityController {
          // Save the imageBase64 string to the model field `activityImagePath`
         activity.setActivityImagePath(imageBase64);
 
+        // Instantiate the Activity object and set the fields
+        Activity activity = new Activity();
+        activity.setActivityDuration(activityDuration);
+        activity.setActivityName(activityName);
+        activity.setActivityPrice(activityPrice);
+        activity.setActivityImagePath(imageBase64);
+
         String sql = "INSERT INTO public.activity(activityduration, activityname, activityprice, activityimage) VALUES (?, ?, ?, ?)";
         try (Connection conn = dataSource.getConnection()) {
             conn.setAutoCommit(false);
