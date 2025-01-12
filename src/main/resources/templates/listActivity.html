@@ -31,16 +31,16 @@
         .btn {
             margin: 5px;
         }
-        #successPopup {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 1000;
-    padding: 15px 20px;
-    border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    transition: opacity 0.5s ease-in-out;
-}
+        #createSuccessPopup, #deleteSuccessPopup, #updateSuccessPopup {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        padding: 15px 20px;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: opacity 0.5s ease-in-out;
+        }
 
 .hidden {
     display: none;
@@ -79,11 +79,19 @@
             sidebar.classList.toggle("close");
         });
     </script>
-    <!-- Navbar -->
+    <!-- Navbar --> 
 </header>
-<div id="successPopup" class="alert alert-success hidden" role="alert">
+
+<div id="deleteSuccessPopup" class="alert alert-success hidden" role="alert">
     Activity deleted successfully!
 </div>
+<div id="createSuccessPopup" class="alert alert-success hidden" role="alert">
+    Activity created successfully!
+</div>
+<div id="updateSuccessPopup" class="alert alert-success hidden" role="alert">
+    Activity updates successfully!
+</div>
+
 <div class="container">
     <div class="row">
         <div class="col-12 text-right">
@@ -155,23 +163,51 @@ document.getElementById('confirmDeleteBtn').addEventListener('click', function (
     }
 });
 // Show Success Popup if Delete Was Successful
-document.addEventListener('DOMContentLoaded', function () {
-        const urlParams = new URLSearchParams(window.location.search);
+    document.addEventListener('DOMContentLoaded', function () {
+    const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('deleteSuccess') === 'true') {
-            const popup = document.getElementById('successPopup');
+            const popup = document.getElementById('deleteSuccessPopup');
             popup.classList.add('show');
             popup.classList.remove('hidden');
-
-            // Remove the popup after 3 seconds
             setTimeout(() => {
                 popup.classList.remove('show');
                 popup.classList.add('hidden');
-
-                // Remove the query parameter to avoid showing it again on refresh
                 const url = new URL(window.location);
                 url.searchParams.delete('deleteSuccess');
                 window.history.replaceState({}, '', url);
             }, 3000);
+        }
+
+        const createSuccessParam = urlParams.get('createSuccess');
+        if (createSuccessParam === 'true') {
+            const popup = document.getElementById('createSuccessPopup');
+            if (popup) {
+                popup.classList.add('show');
+                popup.classList.remove('hidden');
+                setTimeout(() => {
+                    popup.classList.remove('show');
+                    popup.classList.add('hidden');
+                    const url = new URL(window.location);
+                    url.searchParams.delete('createSuccess');
+                    window.history.replaceState({}, '', url);
+                }, 3000);
+            }
+        }
+
+        const updateSuccessParam = urlParams.get('updateSuccess');
+        if (updateSuccessParam === 'true') {
+            const popup = document.getElementById('updateSuccessPopup');
+            if (popup) {
+                popup.classList.add('show');
+                popup.classList.remove('hidden');
+                setTimeout(() => {
+                    popup.classList.remove('show');
+                    popup.classList.add('hidden');
+                    const url = new URL(window.location);
+                    url.searchParams.delete('updateSuccess');
+                    window.history.replaceState({}, '', url);
+                }, 3000);
+            }
         }
     });
 </script>
