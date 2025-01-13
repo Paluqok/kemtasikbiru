@@ -84,7 +84,7 @@ public class CustomerController {
             throw new RuntimeException("Failed to insert cust", e);
         }
 
-        return "redirect:/custLogin"; // Return the created cust object
+        return "redirect:/custLogin?createSuccess=true"; // Return the created cust object
     }
 
     @GetMapping("/custLogin")
