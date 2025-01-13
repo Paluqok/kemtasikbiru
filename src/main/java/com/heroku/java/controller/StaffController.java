@@ -44,7 +44,7 @@ public class StaffController {
                 List<Staff> managers = new ArrayList<>();
                 while (resultSet.next()) {
                     Staff manager = new Staff();
-                    manager.setStaffId(resultSet.getInt("staffid"));
+                    manager.setStaffId(resultSet.getLong("staffid"));
                     manager.setStaffName(resultSet.getString("staffname"));
                     managers.add(manager);
                 }
