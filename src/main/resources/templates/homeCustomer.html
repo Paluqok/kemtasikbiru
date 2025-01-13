@@ -23,7 +23,7 @@
       <!-- Navbar -->
     </header>
     <style>
-      #updateSuccessPopup {
+      #loginSuccessPopup {
         position: fixed;
         top: 20px;
         right: 20px;
@@ -31,17 +31,19 @@
         padding: 15px 20px;
         border-radius: 5px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        transition: opacity 0.5s ease-in-out;
+        opacity: 0;
         display: none;
+        transition: opacity 0.5s ease-in-out;
         }
 
         .show {
             display: block !important;
+            opacity: 1;
         }
     </style>
   
     <main>
-      <div id="updateSuccessPopup" class="alert alert-success hidden" role="alert">
+      <div id="loginSuccessPopup" class="alert alert-success" role="alert">
         Hi <span th:text="${cust.custName}"></span>, you have successfully logged in!
     </div>
     </main>
@@ -65,21 +67,28 @@
         });
 
         document.addEventListener('DOMContentLoaded', function () {
-        const urlParams = new URLSearchParams(window.location.search);
-        const updateSuccessParam = urlParams.get('updateSuccess');
-        if (updateSuccessParam === 'true') {
-            const popup = document.getElementById('updateSuccessPopup');
-            if (popup) {
-              popup.style.display = 'block';
+    function showPopup(popupId) {
+        const popup = document.getElementById(popupId);
+        if (popup) {
+            popup.classList.add('show');
+            popup.style.display = 'block'; // Ensure it's displayed for visibility
+            setTimeout(() => {
+                popup.classList.remove('show');
                 setTimeout(() => {
-                  popup.style.display = 'none';
-                    const url = new URL(window.location);
-                    url.searchParams.delete('updateSuccess');
-                    window.history.replaceState({}, '', url);
-                }, 5000);
-            }
+                    popup.style.display = 'none'; // Hide after transition
+                }, 500); // Wait for opacity transition before hiding
+                const url = new URL(window.location);
+                url.searchParams.delete(popupId.replace('Popup', 'Success'));
+                window.history.replaceState({}, '', url);
+            }, 3000); // Show for 3 seconds
         }
-    });
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('loginSuccess') === 'true') {
+        showPopup('loginSuccessPopup');
+    }
+});
         </script>
     </header>
 </body>
