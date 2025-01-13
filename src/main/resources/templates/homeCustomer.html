@@ -22,9 +22,33 @@
       <div th:insert="~{fragments/custnavbar::navbar}"></div>
       <!-- Navbar -->
     </header>
+    <style>
+      #updateSuccessPopup {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        padding: 15px 20px;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: opacity 0.5s ease-in-out;
+        }
+
+        .hidden {
+            display: none;
+            opacity: 0;
+        }
+
+        .show {
+            display: block;
+            opacity: 1;
+        }
+    </style>
   
     <main>
-        
+      <div id="updateSuccessPopup" class="alert alert-success" role="alert">
+        Hi <span th:text="${customer.custName}"></span>, you have successfully logged in!
+    </div>
     </main>
   
     <footer></footer>
@@ -44,6 +68,25 @@
         sidebarBtn.addEventListener("click", ()=>{
           sidebar.classList.toggle("close");
         });
+
+        document.addEventListener('DOMContentLoaded', function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const updateSuccessParam = urlParams.get('updateSuccess');
+        if (updateSuccessParam === 'true') {
+            const popup = document.getElementById('updateSuccessPopup');
+            if (popup) {
+                popup.classList.add('show');
+                popup.classList.remove('hidden');
+                setTimeout(() => {
+                    popup.classList.remove('show');
+                    popup.classList.add('hidden');
+                    const url = new URL(window.location);
+                    url.searchParams.delete('updateSuccess');
+                    window.history.replaceState({}, '', url);
+                }, 3000);
+            }
+        }
+    });
         </script>
     </header>
 </body>

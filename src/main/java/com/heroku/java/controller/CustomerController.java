@@ -130,7 +130,7 @@ public class CustomerController {
                     }
                 }
             }
-            return "redirect:/custLogin";
+            return "redirect:/custLogin?updateSuccess=true";
         } catch (SQLException e) {
             logger.error("Error during cust login", e);
             return "redirect:/error";

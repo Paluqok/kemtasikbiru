@@ -34,6 +34,26 @@
         .btn-container form {
         display: inline; /* Make sure the form is displayed inline */
         }
+        #updateSuccessPopup {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        padding: 15px 20px;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: opacity 0.5s ease-in-out;
+        }
+
+        .hidden {
+            display: none;
+            opacity: 0;
+        }
+
+        .show {
+            display: block;
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -56,6 +76,10 @@
             });
         </script>
     </header>
+
+    <div id="updateSuccessPopup" class="alert alert-success hidden" role="alert">
+        Account updates successfully!
+    </div>
 
     <div class="profile-container">
         <h2>Customer Profile</h2>
@@ -95,8 +119,8 @@
                                 Are you sure you want to delete your account? This action cannot be undone.
                             </div>
                             <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" id="confirmDeleteAccount">Confirm</button>
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                <button type="button" class="btn btn-danger" id="confirmDeleteAccount">Delete</button>
                             </div>
                         </div>
                     </div>
@@ -121,5 +145,25 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const updateSuccessParam = urlParams.get('updateSuccess');
+        if (updateSuccessParam === 'true') {
+            const popup = document.getElementById('updateSuccessPopup');
+            if (popup) {
+                popup.classList.add('show');
+                popup.classList.remove('hidden');
+                setTimeout(() => {
+                    popup.classList.remove('show');
+                    popup.classList.add('hidden');
+                    const url = new URL(window.location);
+                    url.searchParams.delete('updateSuccess');
+                    window.history.replaceState({}, '', url);
+                }, 3000);
+            }
+        }
+    });
+    </script>
 </body>
 </html>
