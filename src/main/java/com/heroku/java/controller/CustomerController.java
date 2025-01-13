@@ -243,7 +243,7 @@ public String updateCustomer(
     }
 
     session.setAttribute("cust", currentCustomer);
-    return "redirect:/custProfile";
+    return "redirect:/custProfile?updateSuccess=true";
 }
 
 
@@ -269,7 +269,7 @@ public String deleteCustomer(HttpSession session) {
     // Invalidate the session
     session.invalidate();
 
-    return "redirect:/custLogin";
+    return "redirect:/custLogin?deleteSuccess=true";
 }
     
 }
