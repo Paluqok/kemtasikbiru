@@ -31,22 +31,22 @@
         padding: 15px 20px;
         border-radius: 5px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        background-color: #d4edda; /* Added background color */
-        color: #155724; /* Added text color */
-        border: 1px solid #c3e6cb; /* Added border */
-        opacity: 0;
-        display: none;
         transition: opacity 0.5s ease-in-out;
         }
 
+        .hidden {
+            display: none;
+            opacity: 0;
+        }
+
         .show {
-            display: block !important;
-            opacity: 1 !important;
+            display: block;
+            opacity: 1;
         }
     </style>
   
     <main>
-      <div id="loginSuccessPopup" class="alert alert-success" role="alert">
+      <div id="loginSuccessPopup" class="alert alert-success hidden" role="alert">
         Hi <span th:text="${cust.custName}"></span>, you have successfully logged in!
     </div>
     </main>
@@ -68,32 +68,26 @@
         sidebarBtn.addEventListener("click", ()=>{
           sidebar.classList.toggle("close");
         });
-
-        document.addEventListener('DOMContentLoaded', function () {
-    function showPopup(popupId) {
-        const popup = document.getElementById(popupId);
-        if (popup) {
-            popup.classList.add('show');
-            popup.style.display = 'block'; // Ensure it's displayed for visibility
-            setTimeout(() => {
-                popup.classList.remove('show');
-                setTimeout(() => {
-                    popup.style.display = 'none'; // Hide after transition
-                }, 500); // Wait for opacity transition before hiding
-                const url = new URL(window.location);
-                url.searchParams.delete(popupId.replace('Popup', 'Success'));
-                window.history.replaceState({}, '', url);
-            }, 3000); // Show for 3 seconds
-        }
-    }
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const loginSuccess = urlParams.get('loginSuccess');
-    console.log('Login success parameter:', loginSuccess);
-    if (loginSuccess === 'true') {
-        showPopup('loginSuccessPopup');
-    }
-});
+        </script>
+        <script>
+          document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const loginSuccessParam = urlParams.get('loginSuccess');
+            if (loginSuccessParam === 'true') {
+                const popup = document.getElementById('loginSuccessPopup');
+                if (popup) {
+                    popup.classList.add('show');
+                    popup.classList.remove('hidden');
+                    setTimeout(() => {
+                        popup.classList.remove('show');
+                        popup.classList.add('hidden');
+                        const url = new URL(window.location);
+                        url.searchParams.delete('loginSuccess');
+                        window.history.replaceState({}, '', url);
+                    }, 5000);
+                }
+            }
+          });
         </script>
     </header>
 </body>
