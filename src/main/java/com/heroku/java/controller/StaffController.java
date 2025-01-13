@@ -122,7 +122,7 @@ public class StaffController {
                             session.setAttribute("staffname", staff.getStaffName());
                             session.setAttribute("staffid", staff.getStaffId());
                             session.setAttribute("staff", staff);
-                            return "redirect:/homeStaff";
+                            return "redirect:/homeStaff?loginSuccess=true";
                         } else {
                             logger.warn("Password does not match for staff: {}", staff.getStaffName());
                         }
