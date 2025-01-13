@@ -72,7 +72,7 @@ public class StaffController {
         staff.setStaffPhoneNo(staffPhoneNo);
         staff.setStaffPassword(staffPassword);
 
-        Long assignedManagerId = "staff".equals(userType) ? managerId : null;
+        //Long assignedManagerId = "staff".equals(userType) ? managerId : null;
 
         try (Connection connection = dataSource.getConnection()) {
             String staffSql = "INSERT INTO public.staff(staffname, staffemail, staffaddress, staffphoneno, staffpassword, managerid) VALUES (?, ?, ?, ?, ?, ?) RETURNING staffid";
@@ -91,10 +91,11 @@ public class StaffController {
                 statement.setString(3, staff.getStaffAddress());
                 statement.setString(4, staff.getStaffPhoneNo());
                 statement.setString(5, staff.getStaffPassword());
-                statement.setObject(6, assignedManagerId);
 
-                if ("staff".equals(userType)) {
-                    statement.setLong(6, managerId);
+                if (managerId == null) {
+                    statement.setNull(6, java.sql.Types.INTEGER);
+                } else {
+                    statement.setInt(6, managerId);
                 }
 
                 try (ResultSet resultSet = statement.executeQuery()) {
@@ -143,6 +144,13 @@ public class StaffController {
                         staff.setStaffAddress(resultSet.getString("staffaddress"));
                         staff.setStaffPassword(resultSet.getString("staffpassword"));
 
+                        int managerId = resultSet.getInt("managerid");
+                        if (resultSet.wasNull()) {
+                            staff.setManagerId(null);
+                        } else {
+                            staff.setManagerId(managerId);
+                        }
+
                         logger.info("Staff found: {}", staff.getStaffName());
 
                         if (staff.getStaffPassword().equals(staffPassword)) {
@@ -187,11 +195,6 @@ public class StaffController {
         }
 
         Staff staff = (Staff) session.getAttribute("staff");
-        if (staff == null) {
-            logger.warn("staff is null in session");
-            return "redirect:/staffLogin";
-        }
-
         model.addAttribute("staff", staff);
         return "homeStaff";
     }
