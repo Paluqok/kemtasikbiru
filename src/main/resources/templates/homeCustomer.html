@@ -32,16 +32,11 @@
         border-radius: 5px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         transition: opacity 0.5s ease-in-out;
-        }
-
-        .hidden {
-            display: none;
-            opacity: 0;
+        display: none;
         }
 
         .show {
-            display: block;
-            opacity: 1;
+            display: block !important;
         }
     </style>
   
@@ -75,11 +70,9 @@
         if (updateSuccessParam === 'true') {
             const popup = document.getElementById('updateSuccessPopup');
             if (popup) {
-                popup.classList.add('show');
-                popup.classList.remove('hidden');
+              popup.style.display = 'block';
                 setTimeout(() => {
-                    popup.classList.remove('show');
-                    popup.classList.add('hidden');
+                  popup.style.display = 'none';
                     const url = new URL(window.location);
                     url.searchParams.delete('updateSuccess');
                     window.history.replaceState({}, '', url);
