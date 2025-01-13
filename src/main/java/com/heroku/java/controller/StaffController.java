@@ -130,7 +130,7 @@ public class StaffController {
         logger.info("Attempting to log in staff with email: {}", staffEmail);
 
         try (Connection conn = dataSource.getConnection()) {
-            String sql = "SELECT staffid, staffname, staffemail, staffphoneno, staffaddress, staffpassword FROM public.staff WHERE staffemail = ?";
+            String sql = "SELECT staffid, staffname, staffemail, staffphoneno, staffaddress, staffpassword, managerid FROM public.staff WHERE staffemail = ?";
             try (PreparedStatement statement = conn.prepareStatement(sql)) {
                 statement.setString(1, staffEmail);
 
