@@ -165,22 +165,6 @@ public class ActivityController {
             return "redirect:/staffLogin";
         }
 
-        // Handle file upload
-        /*String activityImagePath = null;
-        if (!activityImage.isEmpty()) {
-            String uploadDirectory = "src/main/resources/images/"; // Define this directory for saving the image
-            try {
-                // Ensure the directory exists
-                Files.createDirectories(Paths.get(uploadDirectory));
-                Path filePath = Paths.get(uploadDirectory + activityImage.getOriginalFilename());
-                Files.write(filePath, activityImage.getBytes());
-                activityImagePath = activityImage.getOriginalFilename(); // Save just the filename
-            } catch (IOException e) {
-                e.printStackTrace();
-                // Handle the exception accordingly
-            }
-        }*/
-
         // Convert the image to Base64 string
         String imageBase64 = null;
         if (!activityImage.isEmpty()) {
