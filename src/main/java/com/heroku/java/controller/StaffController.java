@@ -44,7 +44,7 @@ public class StaffController {
                 List<Staff> managers = new ArrayList<>();
                 while (resultSet.next()) {
                     Staff manager = new Staff();
-                    manager.setStaffId(resultSet.getLong("staffid"));
+                    manager.setStaffId(resultSet.getInt("staffid"));
                     manager.setStaffName(resultSet.getString("staffname"));
                     managers.add(manager);
                 }
@@ -63,7 +63,7 @@ public class StaffController {
                                    @RequestParam("staffPhoneNo") String staffPhoneNo,
                                    @RequestParam("staffPassword") String staffPassword,
                                    @RequestParam("userType") String userType,
-                                   @RequestParam(value = "managerId", required = false) Long managerId) throws IOException {
+                                   @RequestParam(value = "managerId", required = false) Integer managerId) throws IOException {
         
         Staff staff = new Staff();
         staff.setStaffName(staffName);
