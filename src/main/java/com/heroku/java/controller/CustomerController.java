@@ -154,8 +154,6 @@ public class CustomerController {
             return "redirect:/custLogin";
         }
 
-        model.addAttribute("customer", customer);
-
         Customer cust = (Customer) session.getAttribute("cust");
         if (cust == null) {
             logger.warn("cust is null in session");
