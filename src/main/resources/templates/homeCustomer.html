@@ -31,6 +31,9 @@
         padding: 15px 20px;
         border-radius: 5px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        background-color: #d4edda; /* Added background color */
+        color: #155724; /* Added text color */
+        border: 1px solid #c3e6cb; /* Added border */
         opacity: 0;
         display: none;
         transition: opacity 0.5s ease-in-out;
@@ -38,7 +41,7 @@
 
         .show {
             display: block !important;
-            opacity: 1;
+            opacity: 1 !important;
         }
     </style>
   
@@ -85,7 +88,9 @@
     }
 
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('loginSuccess') === 'true') {
+    const loginSuccess = urlParams.get('loginSuccess');
+    console.log('Login success parameter:', loginSuccess);
+    if (loginSuccess === 'true') {
         showPopup('loginSuccessPopup');
     }
 });
