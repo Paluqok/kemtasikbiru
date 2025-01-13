@@ -121,7 +121,7 @@ public class CustomerController {
                             session.setAttribute("custname", cust.getCustName());
                             session.setAttribute("custid", cust.getCustId());
                             session.setAttribute("cust", cust);
-                            return "redirect:/homeCustomer";
+                            return "redirect:/homeCustomer?loginSuccess=true";
                         } else {
                             logger.warn("Password does not match for cust: {}", cust.getCustName());
                         }
@@ -130,7 +130,7 @@ public class CustomerController {
                     }
                 }
             }
-            return "redirect:/custLogin?loginSuccess=true";
+            return "redirect:/custLogin";
         } catch (SQLException e) {
             logger.error("Error during cust login", e);
             return "redirect:/error";
