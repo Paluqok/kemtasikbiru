@@ -42,7 +42,7 @@
 <body>
     <div class="container">
       <h1>Update Activity</h1>
-      <form id="updateActivityForm" th:action="@{'/updateActivity/' + ${activity.activityId}}" method="post" th:object="${activity}" enctype="multipart/form-data">
+      <form id="updateActivityForm" th:action="@{/updateActivity/{id}(id=${activity.activityId})}" method="post" th:object="${activity}" enctype="multipart/form-data">
         <!-- <input type="hidden" id="action" name="action" value="updateActivity"> -->
         <input type="hidden" id="activityId" name="activityId" th:field="*{activityId}">
 
@@ -69,26 +69,41 @@
             <input type="file" class="form-control" id="activityImage" name="activityImage">
             <input type="hidden" th:field="*{activityImagePath}">
         </div>
-        <div th:switch="${activity.toString()}">
+        <div class="form-group">
+          <label for="activityType">Activity Type:</label><br>
+          <label for="wet">Wet</label>
+          <input type="radio" id="wet" name="activityType" value="wet" 
+                 th:checked="${session.oldActivityType == 'wet'}" onclick="toggleInput('wet')">
+          <label for="dry">Dry</label>
+          <input type="radio" id="dry" name="activityType" value="dry" 
+                 th:checked="${session.oldActivityType == 'dry'}" onclick="toggleInput('dry')"><br><br>
+        </div>
+        <div id="equipmentDiv" class="form-group" th:classappend="${session.oldActivityType != 'wet' ? 'hidden' : ''}">
+          <label for="equipment">Equipment:</label>
+          <input type="text" class="form-control" id="equipment" name="equipment" 
+                 th:value="${activity instanceof T(your.package.name.Wet) ? activity.activityEquipment : ''}">
+        </div>
+        <div id="locationDiv" class="form-group" th:classappend="${session.oldActivityType != 'dry' ? 'hidden' : ''}">
+          <label for="location">Location:</label>
+          <input type="text" class="form-control" id="location" name="location"
+                 th:value="${activity instanceof T(your.package.name.Dry) ? activity.activityLocation : ''}">
+        </div>
+        <!--<div th:switch="${activity.toString()}">
           <div th:case="'Activity'"> 
             <div class="form-group">
               <label for="activityType">Activity Type:</label><br>
               <label for="wet">Wet</label>
-              <!--<input type="radio" id="wet" name="activityType" value="wet" 
-                     th:checked="${activity instanceof T(com.heroku.java.model.Wet)}"
-                     onclick="toggleInput('wet')">-->
+
               <input type="radio" id="wet" name="activityType" value="wet"
                      th:checked="${session.getAttribute('oldActivityType') == 'wet'}"
                      onclick="toggleInput('wet')">
               <label for="dry">Dry</label>
-              <!--<input type="radio" id="dry" name="activityType" value="dry" 
-                     th:checked="${activity instanceof T(com.heroku.java.model.Dry)}"
-                     onclick="toggleInput('dry')">-->
+
               <input type="radio" id="dry" name="activityType" value="dry"
                      th:checked="${session.getAttribute('oldActivityType') == 'dry'}"
                      onclick="toggleInput('dry')">
           </div>
-          
+
           <div id="equipmentDiv" class="form-group" th:classappend="${activity instanceof T(com.heroku.java.model.Wet) ? '' : 'hidden'}">
               <label for="equipment">Equipment:</label>
               <input type="text" class="form-control" id="equipment" name="activityEquipment" 
@@ -101,7 +116,13 @@
                      th:value="${activity instanceof T(com.heroku.java.model.Dry) ? activity.activityLocation : ''}">
           </div>
           </div>
-        </div>
+        </div>-->
+        <!--<input type="radio" id="wet" name="activityType" value="wet" 
+                     th:checked="${activity instanceof T(com.heroku.java.model.Wet)}"
+                     onclick="toggleInput('wet')">-->
+          <!--<input type="radio" id="dry" name="activityType" value="dry" 
+                     th:checked="${activity instanceof T(com.heroku.java.model.Dry)}"
+                     onclick="toggleInput('dry')">-->
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmModal">
           Submit
         </button>
