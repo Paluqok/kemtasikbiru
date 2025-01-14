@@ -288,6 +288,106 @@ public String updateActivityForm(@PathVariable Long id, HttpSession session, Mod
 }
 
     @PostMapping("/updateActivity/{id}")
+public String updateActivity(@PathVariable Long id, HttpSession session,
+                            @ModelAttribute Activity updatedActivity,
+                            @RequestParam("activityImage") MultipartFile activityImage,
+                            @RequestParam("activityType") String activityType,
+                            @RequestParam(value = "equipment", required = false) String activityEquipment,
+                            @RequestParam(value = "location", required = false) String activityLocation) {
+    Staff staff = (Staff) session.getAttribute("staff");
+    if (staff == null) {
+        return "redirect:/staffLogin";
+    }
+
+    // Handle image update
+    String imageBase64 = updatedActivity.getActivityImagePath(); 
+    if (!activityImage.isEmpty()) {
+        try {
+            byte[] imageBytes = activityImage.getBytes();
+            imageBase64 = Base64.getEncoder().encodeToString(imageBytes);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    Connection conn = null;
+    try {
+        conn = dataSource.getConnection();
+        conn.setAutoCommit(false);  // Start transaction manually
+
+        // Update main activity table first
+        String updateActivitySQL = "UPDATE public.activity SET activityname = ?, activityduration = ?, activityprice = ?, activityimage = ? WHERE activityid = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(updateActivitySQL)) {
+            stmt.setString(1, updatedActivity.getActivityName());
+            stmt.setString(2, updatedActivity.getActivityDuration());
+            stmt.setDouble(3, updatedActivity.getActivityPrice());
+            stmt.setString(4, imageBase64);
+            stmt.setLong(5, id);
+            stmt.executeUpdate();
+        }
+
+        // Handle activity type specific updates
+        String oldActivityType = (String) session.getAttribute("oldActivityType");
+        if (oldActivityType != null) {
+            oldActivityType = oldActivityType.toLowerCase();
+        }
+
+        // Remove existing type-specific data if type is changing
+        if (!activityType.equals(oldActivityType)) {
+            if (oldActivityType != null) {
+                String deleteOldTypeSQL = "DELETE FROM public." + oldActivityType + " WHERE activityid = ?";
+                try (PreparedStatement stmt = conn.prepareStatement(deleteOldTypeSQL)) {
+                    stmt.setLong(1, id);
+                    stmt.executeUpdate();
+                }
+            }
+        }
+
+        // Insert new type-specific data
+        if (activityType.equals("wet")) {
+            String wetSQL = "INSERT INTO public.wet (activityid, activityequipment) VALUES (?, ?) " +
+                          "ON CONFLICT (activityid) DO UPDATE SET activityequipment = EXCLUDED.activityequipment";
+            try (PreparedStatement stmt = conn.prepareStatement(wetSQL)) {
+                stmt.setLong(1, id);
+                stmt.setString(2, activityEquipment);
+                stmt.executeUpdate();
+            }
+        } else if (activityType.equals("dry")) {
+            String drySQL = "INSERT INTO public.dry (activityid, activitylocation) VALUES (?, ?) " +
+                          "ON CONFLICT (activityid) DO UPDATE SET activitylocation = EXCLUDED.activitylocation";
+            try (PreparedStatement stmt = conn.prepareStatement(drySQL)) {
+                stmt.setLong(1, id);
+                stmt.setString(2, activityLocation);
+                stmt.executeUpdate();
+            }
+        }
+
+        conn.commit();  // Commit the transaction
+        return "redirect:/listActivity?updateSuccess=true";
+
+    } catch (SQLException e) {
+        if (conn != null) {
+            try {
+                conn.rollback();  // Rollback on error
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+        e.printStackTrace();
+        return "redirect:/listActivity?updateError=true";
+    } finally {
+        if (conn != null) {
+            try {
+                conn.setAutoCommit(true);  // Reset auto-commit
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+
+    /*@PostMapping("/updateActivity/{id}")
     public String updateActivity(@PathVariable Long id, HttpSession session,
                                 @ModelAttribute Activity updatedActivity,
                                 @RequestParam("activityImage") MultipartFile activityImage,
@@ -368,7 +468,7 @@ public String updateActivityForm(@PathVariable Long id, HttpSession session, Mod
         }
 
         return "redirect:/listActivity?updateSuccess=true";
-    }
+    }*/
 
     // @PostMapping("/deleteActivity/{id}")
     @GetMapping("/deleteActivity/{id}")
