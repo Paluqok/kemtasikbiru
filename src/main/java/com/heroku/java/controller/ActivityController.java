@@ -289,10 +289,10 @@ public String updateActivityForm(@PathVariable Long id, HttpSession session, Mod
     @PostMapping("/updateActivity/{id}")
     public String updateActivity(@PathVariable Long id, HttpSession session,
                                 @ModelAttribute Activity updatedActivity,
+                                @RequestParam("activityImage") MultipartFile activityImage,
                                 @RequestParam("activityType") String activityType,
-                                @RequestParam("activityLocation") String activityLocation,
-                                @RequestParam("activityEquipment") String activityEquipment,
-                                @RequestParam("activityImage") MultipartFile activityImage) {
+                                @RequestParam(value = "equipment", required = false) String equipment,
+                                @RequestParam(value = "location", required = false) String location) {
         Staff staff = (Staff) session.getAttribute("staff");
         if (staff == null) {
             return "redirect:/staffLogin";
