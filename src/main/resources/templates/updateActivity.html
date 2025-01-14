@@ -81,12 +81,14 @@
         <div id="equipmentDiv" class="form-group" th:classappend="${session.oldActivityType != 'wet' ? 'hidden' : ''}">
           <label for="equipment">Equipment:</label>
           <input type="text" class="form-control" id="equipment" name="equipment" 
-                 th:value="${activity instanceof T(your.package.name.Wet) ? activity.activityEquipment : ''}">
+                 th:if="${session.oldActivityType == 'wet'}"
+                 th:value="${activity.activityEquipment}">
         </div>
         <div id="locationDiv" class="form-group" th:classappend="${session.oldActivityType != 'dry' ? 'hidden' : ''}">
           <label for="location">Location:</label>
           <input type="text" class="form-control" id="location" name="location"
-                 th:value="${activity instanceof T(your.package.name.Dry) ? activity.activityLocation : ''}">
+                 th:if="${session.oldActivityType == 'dry'}"
+                 th:value="${activity.activityLocation}">
         </div>
         <!--<div th:switch="${activity.toString()}">
           <div th:case="'Activity'"> 
