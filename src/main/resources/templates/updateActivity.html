@@ -74,12 +74,18 @@
             <div class="form-group">
               <label for="activityType">Activity Type:</label><br>
               <label for="wet">Wet</label>
-              <input type="radio" id="wet" name="activityType" value="wet" 
+              <!--<input type="radio" id="wet" name="activityType" value="wet" 
                      th:checked="${activity instanceof T(com.heroku.java.model.Wet)}"
+                     onclick="toggleInput('wet')">-->
+              <input type="radio" id="wet" name="activityType" value="wet"
+                     th:checked="${session.getAttribute('oldActivityType') == 'wet'}"
                      onclick="toggleInput('wet')">
               <label for="dry">Dry</label>
-              <input type="radio" id="dry" name="activityType" value="dry" 
+              <!--<input type="radio" id="dry" name="activityType" value="dry" 
                      th:checked="${activity instanceof T(com.heroku.java.model.Dry)}"
+                     onclick="toggleInput('dry')">-->
+              <input type="radio" id="dry" name="activityType" value="dry"
+                     th:checked="${session.getAttribute('oldActivityType') == 'dry'}"
                      onclick="toggleInput('dry')">
           </div>
           

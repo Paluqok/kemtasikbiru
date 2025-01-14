@@ -275,6 +275,7 @@ public String updateActivityForm(@PathVariable Long id, HttpSession session, Mod
                 session.setAttribute("oldActivityType", "dry");
             } else {
                 activity = new Activity(id, name, duration, price, image);
+                session.removeAttribute("oldActivityType");
             }
             
             model.addAttribute("activity", activity);
