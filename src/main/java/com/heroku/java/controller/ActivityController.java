@@ -150,7 +150,7 @@ public class ActivityController {
         return "createActivity";
     }
 
-    @PostMapping("/createActivities")
+    /*@PostMapping("/createActivities")
     public String createActivity(HttpSession session, 
                                  @ModelAttribute("activity") 
                                  @RequestParam("name") String activityName,
@@ -238,7 +238,94 @@ public class ActivityController {
         }
 
         return "redirect:/listActivity?createSuccess=true";
+    }*/
+   @PostMapping("/createActivities")
+public String createActivity(HttpSession session, 
+                             @RequestParam("name") String activityName,
+                             @RequestParam("duration") String activityDuration,
+                             @RequestParam("price") double activityPrice,
+                             @RequestParam("activityImage") MultipartFile activityImage,
+                             @RequestParam("activityType") String activityType,
+                             @RequestParam(value = "equipment", required = false) String equipment,
+                             @RequestParam(value = "location", required = false) String location) {
+    Staff staff = (Staff) session.getAttribute("staff");
+    if (staff == null) {
+        return "redirect:/staffLogin";
     }
+
+    Connection conn = null;
+    try {
+        conn = dataSource.getConnection();
+        conn.setAutoCommit(false);  // Start transaction
+
+        // Convert image to Base64
+        String imageBase64 = null;
+        if (!activityImage.isEmpty()) {
+            byte[] imageBytes = activityImage.getBytes();
+            imageBase64 = Base64.getEncoder().encodeToString(imageBytes);
+        }
+
+        // Insert into activity table
+        Long activityId = null;
+        String activitySql = "INSERT INTO public.activity(activityduration, activityname, activityprice, activityimage) VALUES (?, ?, ?, ?) RETURNING activityid";
+        
+        try (PreparedStatement stmt = conn.prepareStatement(activitySql)) {
+            stmt.setString(1, activityDuration);
+            stmt.setString(2, activityName);
+            stmt.setDouble(3, activityPrice);
+            stmt.setString(4, imageBase64);
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                activityId = rs.getLong(1);
+            } else {
+                throw new SQLException("Failed to retrieve generated activity ID");
+            }
+        }
+
+        // Insert into child table based on activity type
+        if (activityId != null) {
+            String childSql;
+            if ("wet".equals(activityType) && equipment != null) {
+                childSql = "INSERT INTO public.wet(activityid, activityequipment) VALUES (?, ?)";
+                try (PreparedStatement stmt = conn.prepareStatement(childSql)) {
+                    stmt.setLong(1, activityId);
+                    stmt.setString(2, equipment);
+                    stmt.executeUpdate();
+                }
+            } else if ("dry".equals(activityType) && location != null) {
+                childSql = "INSERT INTO public.dry(activityid, activitylocation) VALUES (?, ?)";
+                try (PreparedStatement stmt = conn.prepareStatement(childSql)) {
+                    stmt.setLong(1, activityId);
+                    stmt.setString(2, location);
+                    stmt.executeUpdate();
+                }
+            }
+        }
+
+        conn.commit();  // Commit transaction
+        return "redirect:/listActivity?createSuccess=true";
+
+    } catch (Exception e) {
+        if (conn != null) {
+            try {
+                conn.rollback();  // Rollback on error
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+        e.printStackTrace();
+        return "redirect:/listActivity?error=true";
+    } finally {
+        if (conn != null) {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
 
     @GetMapping("/updateActivity/{id}")
 public String updateActivityForm(@PathVariable Long id, HttpSession session, Model model) {
