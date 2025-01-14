@@ -291,8 +291,8 @@ public String updateActivityForm(@PathVariable Long id, HttpSession session, Mod
                                 @ModelAttribute Activity updatedActivity,
                                 @RequestParam("activityImage") MultipartFile activityImage,
                                 @RequestParam("activityType") String activityType,
-                                @RequestParam(value = "equipment", required = false) String equipment,
-                                @RequestParam(value = "location", required = false) String location) {
+                                @RequestParam(value = "equipment", required = false) String activityEquipment,
+                                @RequestParam(value = "location", required = false) String activityLocation) {
         Staff staff = (Staff) session.getAttribute("staff");
         if (staff == null) {
             return "redirect:/staffLogin";
@@ -311,20 +311,23 @@ public String updateActivityForm(@PathVariable Long id, HttpSession session, Mod
 
         // SQL for updating activity and the location or equipment activity depending if it's Dry or Wet
         String sql = "UPDATE public.activity SET activityname = ?, activityduration = ?, activityprice = ?, activityimage = ? WHERE activityid = ?;";
-        // if ((updatedActivity instanceof Dry || updatedActivity instanceof Activity) && activityType.equals("dry")) {
+        
         if (session.getAttribute("oldActivityType").equals("Dry") && activityType.equals("dry")) {
             System.out.println("Dry and dry");
             sql = "BEGIN TRANSACTION; UPDATE public.activity SET activityname = ?, activityduration = ?, activityprice = ?, activityimage = ? WHERE activityid = ?; UPDATE public.dry SET activityLocation = ? WHERE activityid = ?; COMMIT;";
-        // } else if ((updatedActivity instanceof Wet || updatedActivity instanceof Activity) && activityType.equals("wet")) {
+        
         } else if (session.getAttribute("oldActivityType").equals("Wet") && activityType.equals("wet")) {
             System.out.println("Wet and wet");
             sql = "BEGIN TRANSACTION; UPDATE public.activity SET activityname = ?, activityduration = ?, activityprice = ?, activityimage = ? WHERE activityid = ?; UPDATE public.wet SET activityEquipment = ? WHERE activityid = ?; COMMIT;";
+        
         } else if (activityType.equals("dry")) {
             System.out.println("dry");
             sql = "BEGIN TRANSACTION; UPDATE public.activity SET activityname = ?, activityduration = ?, activityprice = ?, activityimage = ? WHERE activityid = ?; DELETE FROM public.wet WHERE EXISTS (SELECT FROM public.wet WHERE activityid = ?); INSERT INTO public.dry(activityid, activitylocation) VALUES (?, ?); COMMIT;";
+        
         } else if (activityType.equals("wet")) {
             System.out.println("wet");
             sql = "BEGIN TRANSACTION; UPDATE public.activity SET activityname = ?, activityduration = ?, activityprice = ?, activityimage = ? WHERE activityid = ?; DELETE FROM public.dry WHERE EXISTS (SELECT FROM public.dry WHERE activityid = ?); INSERT INTO public.wet(activityid, activityequipment) VALUES (?, ?); COMMIT;";
+        
         } else { // activityType is not selected
             System.out.println("activityType is not selected");
             sql = "UPDATE public.activity SET activityname = ?, activityduration = ?, activityprice = ?, activityimage = ? WHERE activityid = ?;";
