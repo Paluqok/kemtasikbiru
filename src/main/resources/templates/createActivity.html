@@ -39,7 +39,7 @@
 <body>
 <div class="container">
   <h1>Create Activity</h1>
-  <form th:action="@{/createActivities}" modelAttribute="createActivities" method="post" enctype="multipart/form-data">
+  <form th:action="@{/createActivities}" modelAttribute="activity" method="post" enctype="multipart/form-data">
     <div class="form-group">
       <input type="hidden" id="action" name="action" value="createActivity">
       <label for="name">Activity Name:</label>

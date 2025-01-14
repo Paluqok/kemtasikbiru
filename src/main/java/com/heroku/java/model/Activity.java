@@ -43,7 +43,7 @@ public class Activity {
 
     public String getActivityDuration() {
         return activityDuration;
-    }
+    } 
 
     public void setActivityDuration(String activityDuration) {
         this.activityDuration = activityDuration;

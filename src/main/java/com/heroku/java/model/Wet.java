@@ -10,11 +10,16 @@ public class Wet extends Activity {
         this.activityEquipment = activityEquipment;
     }
 
-    public String getActivityEquipment() { return activityEquipment; }
-    public void setActivityEquipment(String activityEquipment) { this.activityEquipment = activityEquipment; }
+    public String getActivityEquipment() { 
+        return activityEquipment; 
+        }
+    public void setActivityEquipment(String activityEquipment) { 
+        this.activityEquipment = activityEquipment; 
+        }
 
     @Override
     public String toString() {
         return "Wet";
     }
 }
+ 
