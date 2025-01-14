@@ -153,12 +153,10 @@
     </div>
     
     <script>
-    function toggleInput(option) {
+    /*function toggleInput(option) {
       document.getElementById('equipmentDiv').classList.add('hidden');
       document.getElementById('locationDiv').classList.add('hidden');
-      // document.getElementById('equipment').value = '';
-      // document.getElementById('location').value = '';
-    
+
       if (option === 'wet') {
         document.getElementById('equipmentDiv').classList.remove('hidden');
       } else if (option === 'dry') {
@@ -169,7 +167,36 @@
     document.addEventListener('DOMContentLoaded', () => {
             const activityType = '${session.getAttribute("oldActivityType")}';
             toggleInput(activityType);
-        });
+        });*/
+    
+        function toggleInput(option) {
+  const equipmentDiv = document.getElementById('equipmentDiv');
+  const locationDiv = document.getElementById('locationDiv');
+  const equipmentInput = document.getElementById('equipment');
+  const locationInput = document.getElementById('location');
+
+  if (option === 'wet') {
+    equipmentDiv.classList.remove('hidden');
+    locationDiv.classList.add('hidden');
+    locationInput.value = '';
+  } else if (option === 'dry') {
+    locationDiv.classList.remove('hidden');
+    equipmentDiv.classList.add('hidden');
+    equipmentInput.value = '';
+  }
+}
+
+// Initialize form based on existing activity type
+document.addEventListener('DOMContentLoaded', function() {
+  const wetRadio = document.getElementById('wet');
+  const dryRadio = document.getElementById('dry');
+  
+  if (wetRadio.checked) {
+    toggleInput('wet');
+  } else if (dryRadio.checked) {
+    toggleInput('dry');
+  }
+});
 
 
     </script>
