@@ -124,13 +124,15 @@ public class CustomerController {
                             return "redirect:/homeCustomer?loginSuccess=true";
                         } else {
                             logger.warn("Password does not match for cust: {}", cust.getCustName());
+                            return "redirect:/custLogin?loginFailed=true";
                         }
                     } else {
                         logger.warn("No cust found with email: {}", custEmail);
+                        return "redirect:/custLogin?loginFailed=true";
                     }
                 }
             }
-            return "redirect:/custLogin";
+            
         } catch (SQLException e) {
             logger.error("Error during cust login", e);
             return "redirect:/error";
