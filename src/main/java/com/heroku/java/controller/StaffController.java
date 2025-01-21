@@ -169,7 +169,7 @@ public class StaffController {
                     }
                 }
             }
-            return "redirect:/staffLogin?loginFailed=true";
+            
         } catch (SQLException e) {
             logger.error("Error during staff login", e);
             return "redirect:/error";
