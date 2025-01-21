@@ -35,7 +35,7 @@
             const gmailPattern = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
 
             if (!gmailPattern.test(emailValue)) {
-                alert('Please enter a valid Gmail address (ending with @gmail.com).');
+                alert('Incorrect email address.');
                 return false;
             }
             const phoneField = document.getElementById('staffPhoneNo');
@@ -45,6 +45,7 @@
             if (!phonePattern.test(phoneValue)) {
                 alert('Please enter a valid phone number (01x-xxxxxxxx or 01xxxxxxxxx).');
                 return false;
+                //Please enter a valid phone number (01x-xxxxxxxx or 01xxxxxxxxx
             }
 
             const passField = document.getElementById('staffPassword');
