@@ -161,13 +161,15 @@ public class StaffController {
                             return "redirect:/homeStaff?loginSuccess=true";
                         } else {
                             logger.warn("Password does not match for staff: {}", staff.getStaffName());
+                            return "redirect:/staffLogin?loginFailed=true";
                         }
                     } else {
                         logger.warn("No staff found with email: {}", staffEmail);
+                        return "redirect:/staffLogin?loginFailed=true";
                     }
                 }
             }
-            return "redirect:/staffLogin";
+            return "redirect:/staffLogin?loginFailed=true";
         } catch (SQLException e) {
             logger.error("Error during staff login", e);
             return "redirect:/error";
